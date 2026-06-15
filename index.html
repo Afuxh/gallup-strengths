@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+
+<meta property="og:title" content="盖洛普优势识别器 — 发现你的天赋" />
+<meta property="og:description" content="180题·34项才干主题·雷达图可视化·AI深度解读·聊天记录交叉分析。发现你独一无二的优势组合。" />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="https://gallup-strengths.pages.dev/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="盖洛普优势识别器" />
+<meta name="twitter:description" content="180题·34项才干主题·发现你的天赋" />
+<meta name="description" content="免费盖洛普优势识别器：180道题在线测试，34项才干主题完整解读，雷达图可视化，AI深度分析+聊天记录交叉验证你的社交模式。" />
+<meta name="keywords" content="盖洛普,优势识别器,才干测试,心理学,性格测试,Gallup,StrengthsFinder" />
+<meta name="theme-color" content="#E32B16" />
+<link rel="canonical" href="https://gallup-strengths.pages.dev/" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>盖洛普优势识别器 — GALLUP STRENGTHSFINDER</title>
+<style>
+:root{
+  --k:#000;--w:#FFF;--g:#8A8A8A;--r:#E32B16;
+  --ease:cubic-bezier(.16,1,.3,1);
+  --pad:clamp(20px,4vw,64px);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{
+  background:var(--k);color:var(--w);
+  font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",-apple-system,sans-serif;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;font-weight:400;
+}
+::selection{background:var(--w);color:var(--k);}
+a{color:inherit;text-decoration:none;}
+.num{font-variant-numeric:tabular-nums;font-family:"SF Mono","Space Mono","Cascadia Code",monospace;}
+.label{font-family:"SF Mono","Space Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;line-height:1.7;}
+.fx-blend{mix-blend-mode:difference;color:var(--w);}
+
+.header{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px var(--pad);pointer-events:none;opacity:0;
+  transition:opacity .4s;
+}
+.header--on{opacity:1;}
+.header *{pointer-events:auto;}
+.header__brand{font-weight:900;font-size:14px;letter-spacing:-.02em;}
+.header__brand i{font-style:italic;font-weight:400;}
+.header__progress{font-size:13px;}
+
+.intro{
+  position:fixed;inset:0;z-index:200;background:var(--k);color:var(--w);
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
+  transition:transform .8s var(--ease);
+}
+.intro--done{transform:translateY(-100%);pointer-events:none;}
+.intro__tag{position:absolute;top:var(--pad);left:var(--pad);color:var(--g);}
+.intro__count{
+  position:absolute;right:var(--pad);bottom:var(--pad);
+  font-weight:700;font-size:clamp(96px,17vw,240px);line-height:.9;letter-spacing:-.02em;
+}
+.intro__word{font-weight:900;font-size:clamp(28px,5vw,56px);letter-spacing:-.04em;line-height:1;text-align:center;}
+.intro__sub{color:var(--g);margin-top:12px;font-size:14px;}
+.intro__bar{margin-top:40px;width:min(320px,60vw);height:1px;background:var(--g);position:relative;overflow:hidden;}
+.intro__bar-fill{position:absolute;left:0;top:0;height:100%;background:var(--r);transition:width .2s linear;}
+
+.red-screen{
+  position:fixed;inset:0;z-index:180;background:var(--r);
+  transform:scaleY(0);transform-origin:top;transition:transform .7s var(--ease);
+  pointer-events:none;
+}
+.red-screen--on{transform:scaleY(1);}
+
+.main{display:none;}
+.main--on{display:block;}
+
+.q-section{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  padding:100px var(--pad) 80px;position:relative;
+}
+.q-inner{width:100%;max-width:680px;}
+.q-num{color:var(--r);font-size:13px;margin-bottom:8px;}
+.q-progress-bar{width:100%;height:1px;background:rgba(255,255,255,.15);margin-bottom:48px;position:relative;}
+.q-progress-bar__fill{position:absolute;left:0;top:0;height:100%;background:var(--r);transition:width .3s var(--ease);}
+.q-prompt{font-size:clamp(22px,3.5vw,34px);font-weight:900;letter-spacing:-.02em;line-height:1.2;margin-bottom:52px;}
+.q-table{width:100%;border-collapse:collapse;}
+.q-table td{padding:0;vertical-align:middle;}
+.q-table__stmt{width:30%;font-size:clamp(15px,2.5vw,20px);line-height:1.75;padding:28px 0;opacity:.9;}
+.q-table__stmt--left{text-align:right;padding-right:32px;}
+.q-table__stmt--right{text-align:left;padding-left:32px;}
+.q-table__scale{width:40%;text-align:center;padding:0 10px;}
+.q-scale{display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:nowrap;}
+.q-scale__btn{
+  flex:1;min-width:0;background:none;border:1px solid rgba(255,255,255,.15);
+  color:var(--g);cursor:pointer;font-family:inherit;font-size:13px;
+  padding:16px 8px;text-align:center;letter-spacing:.06em;line-height:1.3;
+  transition:all .2s var(--ease);white-space:nowrap;
+}
+.q-scale__btn:hover{border-color:var(--w);color:var(--w);}
+.q-scale__btn--l2:hover{border-color:var(--r);color:var(--r);}
+.q-scale__btn--l1:hover{border-color:rgba(227,43,22,.5);color:rgba(227,43,22,.8);}
+.q-scale__btn--r1:hover{border-color:rgba(255,255,255,.5);}
+.q-scale__btn--r2:hover{border-color:var(--w);}
+.q-table__divider{height:1px;background:rgba(255,255,255,.06);}
+.q-table__divider td{padding:0;height:1px;}
+.q-skip-row td{text-align:center;padding-top:32px;}
+.q-skip-btn{
+  display:inline-block;background:none;border:none;
+  color:var(--g);cursor:pointer;font-size:12px;padding:10px 16px;
+  font-family:inherit;letter-spacing:.14em;text-transform:uppercase;
+}
+.q-skip-btn:hover{color:var(--w);}
+.q-instruction{text-align:center;color:var(--g);font-size:12px;margin-top:28px;letter-spacing:.08em;}
+.results{
+  min-height:100vh;padding:100px var(--pad) 80px;
+  display:none;
+}
+.results--on{display:block;}
+.results-inner{width:100%;max-width:720px;margin:0 auto;}
+.results__tag{color:var(--g);margin-bottom:8px;}
+.results__title{
+  font-weight:900;font-size:clamp(36px,6vw,64px);
+  letter-spacing:-.04em;line-height:1;margin-bottom:8px;
+}
+.results__sub{color:var(--g);margin-bottom:56px;font-size:16px;}
+.results__actions{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:64px;}
+.btn{
+  background:none;border:1px solid rgba(255,255,255,.25);
+  color:var(--w);padding:12px 24px;font-size:13px;cursor:pointer;
+  font-family:inherit;letter-spacing:.06em;transition:all .25s var(--ease);
+}
+.btn:hover{border-color:var(--w);}
+.btn--red{border-color:var(--r);color:var(--r);}
+.btn--red:hover{background:var(--r);color:var(--w);}
+
+.strength-list{display:flex;flex-direction:column;gap:0;}
+.strength-item{border-top:1px solid rgba(255,255,255,.1);padding:28px 0;}
+.strength-item:first-child{border-top-color:var(--r);}
+.strength-rank{display:flex;align-items:baseline;gap:12px;margin-bottom:6px;}
+.strength-rank__num{color:var(--r);font-size:48px;font-weight:900;line-height:1;}
+.strength-rank__name{font-weight:900;font-size:28px;letter-spacing:-.02em;}
+.strength-rank__score{color:var(--g);font-size:14px;margin-left:auto;}
+.strength-item__short{color:var(--g);font-size:14px;line-height:1.7;margin-bottom:10px;}
+.strength-item__full{font-size:14px;line-height:1.7;opacity:.75;max-height:120px;overflow:hidden;transition:max-height .4s;}
+.strength-item__full--open{max-height:2000px;}
+.strength-item__toggle{
+  background:none;border:none;color:var(--g);cursor:pointer;
+  font-size:12px;padding:4px 0;font-family:inherit;letter-spacing:.08em;
+  margin-top:4px;
+}
+.strength-item__toggle:hover{color:var(--w);}
+
+@media (max-width:600px){
+  .strength-rank__num{font-size:36px;}
+  .strength-rank__name{font-size:22px;}
+}
+
+/* ======== ENHANCED SECTIONS ======== */
+.enhanced-section {
+  padding: 60px var(--pad) 80px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+.enhanced-section h3 {
+  font-weight: 900;
+  font-size: clamp(24px, 4vw, 36px);
+  letter-spacing: -.02em;
+  margin-bottom: 32px;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+  padding-bottom: 16px;
+}
+
+/* Radar Chart */
+.radar-wrap {
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 48px;
+}
+.radar-wrap canvas { max-height: 420px; }
+
+/* Domain distribution */
+.domain-dist {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 48px;
+}
+.domain-card {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 6px;
+  padding: 20px;
+}
+.domain-card__name {
+  font-weight: 900;
+  font-size: 14px;
+  letter-spacing: .04em;
+  margin-bottom: 12px;
+  color: var(--r);
+}
+.domain-card__bar {
+  width: 100%;
+  height: 6px;
+  background: rgba(255,255,255,.08);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.domain-card__bar-fill {
+  height: 100%;
+  background: var(--r);
+  border-radius: 3px;
+  transition: width .8s var(--ease);
+}
+.domain-card__score {
+  font-size: 12px;
+  color: var(--g);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Full ranking table */
+.ranking-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 48px;
+  font-size: 14px;
+}
+.ranking-table th {
+  text-align: left;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,.15);
+  color: var(--g);
+  font-weight: 400;
+  letter-spacing: .08em;
+  font-size: 11px;
+  text-transform: uppercase;
+  cursor: pointer;
+  user-select: none;
+}
+.ranking-table th:hover { color: var(--w); }
+.ranking-table td {
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(255,255,255,.05);
+}
+.ranking-table tr:hover td { background: rgba(255,255,255,.02); }
+.ranking-table .rank-num { color: var(--r); font-weight: 900; width: 40px; }
+.ranking-table .rank-name { font-weight: 700; }
+.ranking-table .rank-score { color: var(--g); font-variant-numeric: tabular-nums; }
+.ranking-table .rank-bar-wrap { width: 120px; }
+.ranking-table .rank-bar {
+  height: 4px;
+  background: var(--r);
+  border-radius: 2px;
+  transition: width .6s;
+}
+
+/* AI interpretation */
+.ai-section {
+  background: rgba(227,43,22,.06);
+  border: 1px solid rgba(227,43,22,.2);
+  border-radius: 8px;
+  padding: 28px;
+  margin-bottom: 48px;
+}
+.ai-section__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.ai-section__badge {
+  background: var(--r);
+  color: var(--w);
+  font-size: 10px;
+  letter-spacing: .12em;
+  padding: 3px 10px;
+  border-radius: 3px;
+  font-weight: 700;
+}
+.ai-section__title {
+  font-weight: 900;
+  font-size: 16px;
+}
+.ai-section__content {
+  font-size: 14px;
+  line-height: 1.85;
+  opacity: .9;
+}
+.ai-section__content p { margin-bottom: 12px; }
+.ai-section__tag {
+  display: inline-block;
+  background: rgba(255,255,255,.08);
+  padding: 3px 10px;
+  border-radius: 3px;
+  font-size: 12px;
+  margin: 2px 4px 2px 0;
+}
+
+/* Chat upload */
+.chat-section {
+  background: rgba(255,255,255,.03);
+  border: 1px dashed rgba(255,255,255,.15);
+  border-radius: 8px;
+  padding: 40px 28px;
+  text-align: center;
+  margin-bottom: 48px;
+  transition: border-color .3s;
+}
+.chat-section.drag-over { border-color: var(--r); background: rgba(227,43,22,.06); }
+.chat-section__icon { font-size: 36px; margin-bottom: 12px; opacity: .4; }
+.chat-section__text { color: var(--g); font-size: 13px; margin-bottom: 16px; }
+.chat-section__file-input { display: none; }
+.chat-analysis-result {
+  background: rgba(255,255,255,.04);
+  border-radius: 6px;
+  padding: 24px;
+  margin-top: 24px;
+  display: none;
+  text-align: left;
+}
+.chat-analysis-result--on { display: block; }
+.chat-match-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,.05);
+  font-size: 13px;
+}
+.chat-match-item__name { font-weight: 700; }
+.chat-match-item__pct { color: var(--r); font-variant-numeric: tabular-nums; }
+.chat-match-bar {
+  height: 3px;
+  background: var(--r);
+  border-radius: 2px;
+  transition: width .6s;
+}
+
+/* Share card */
+.share-section { margin-bottom: 48px; }
+.share-preview {
+  background: #111;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 8px;
+  overflow: hidden;
+  max-width: 480px;
+  margin: 0 auto;
+}
+.share-card {
+  padding: 32px 28px;
+  text-align: center;
+}
+.share-card__tag { font-size: 10px; letter-spacing: .14em; color: var(--g); margin-bottom: 12px; }
+.share-card__title { font-weight: 900; font-size: 24px; margin-bottom: 24px; letter-spacing: -.02em; }
+.share-card__list { text-align: left; }
+.share-card__item {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.share-card__item-num { color: var(--r); font-weight: 900; font-size: 20px; min-width: 28px; }
+.share-card__item-name { font-weight: 700; font-size: 14px; }
+.share-card__item-score { color: var(--g); font-size: 12px; margin-left: auto; }
+.share-card__footer {
+  margin-top: 24px;
+  font-size: 10px;
+  color: var(--g);
+  letter-spacing: .08em;
+}
+.share-card__watermark { opacity: .3; font-size: 10px; }
+
+/* Footer */
+.site-footer {
+  text-align: center;
+  padding: 40px var(--pad);
+  border-top: 1px solid rgba(255,255,255,.06);
+  color: var(--g);
+  font-size: 12px;
+  letter-spacing: .06em;
+}
+.site-footer a { color: var(--g); text-decoration: underline; }
+.site-footer a:hover { color: var(--w); }
+
+/* Mobile optimizations */
+@media (max-width: 600px) {
+  .domain-dist { grid-template-columns: 1fr 1fr; }
+  .ranking-table { font-size: 12px; }
+  .ranking-table td, .ranking-table th { padding: 8px 10px; }
+  .ranking-table .rank-bar-wrap { width: 60px; }
+  .ai-section { padding: 20px; }
+  .chat-section { padding: 28px 16px; }
+  .enhanced-section { padding: 40px var(--pad) 60px; }
+}
+
+</style>
+</head>
+<body>
+
+<div class="red-screen" id="redScreen"></div>
+
+<div class="intro" id="intro">
+  <p class="intro__tag label">GALLUP — STRENGTHSFINDER</p>
+  <h1 class="intro__word">盖洛普<br>优势识别器</h1>
+  <p class="intro__sub">180 题 · 34 项才干主题 · 发现你的天赋</p>
+  <div class="intro__bar"><div class="intro__bar-fill" id="introBar"></div></div>
+  <p class="intro__count num" id="introCount">000</p>
+</div>
+
+<header class="header fx-blend" id="header">
+  <p class="header__brand">GALLUP ARCHIVE<i>&reg;</i></p>
+  <p class="label header__progress"><span id="qProgress">0</span> / 180</p>
+</header>
+
+<main class="main" id="main">
+  <section class="q-section" id="qSection">
+    <div class="q-inner">
+      <p class="q-num label" id="qNum">01</p>
+      <div class="q-progress-bar"><div class="q-progress-bar__fill" id="qBar" style="width:0%"></div></div>
+      <p class="q-prompt">以下两个描述中，哪一个更像你？</p>
+      <table class="q-table">
+        <tr>
+          <td class="q-table__stmt q-table__stmt--left" id="qTextA"></td>
+          <td class="q-table__scale">
+            <div class="q-scale">
+              <button class="q-scale__btn q-scale__btn--l2" id="qL2">非常像左</button>
+              <button class="q-scale__btn q-scale__btn--l1" id="qL1">有点像左</button>
+              <button class="q-scale__btn q-scale__btn--n" id="qN">中立</button>
+              <button class="q-scale__btn q-scale__btn--r1" id="qR1">有点像右</button>
+              <button class="q-scale__btn q-scale__btn--r2" id="qR2">非常像右</button>
+            </div>
+          </td>
+          <td class="q-table__stmt q-table__stmt--right" id="qTextB"></td>
+        </tr>
+        <tr class="q-skip-row"><td colspan="3">
+          <button class="q-skip-btn" id="qSkipBtn">跳过此题 / SKIP</button>
+        </td></tr>
+      </table>
+      <p class="q-instruction">键盘：数字键 1-5 从左到右选择 · S 跳过</p>
+    </div>
+  </section>
+</main>
+
+<section class="results" id="results">
+  <div class="results-inner">
+    <p class="results__tag label">YOUR TOP 5 STRENGTHS</p>
+    <h2 class="results__title">你的五大优势</h2>
+    <p class="results__sub">已完成 <span id="resultsCount">0</span> / 180 题</p>
+    <div class="results__actions">
+      <button class="btn btn--red" id="btnExport">导出 CSV</button>
+      <button class="btn" id="btnRetake">重新测试</button>
+      <button class="btn" id="btnAll">查看全部 34 项排名</button>
+    </div>
+    <div class="strength-list" id="strengthList"></div>
+  </div>
+</section>
+
+
+<!-- ======== ENHANCED MODULES ======== -->
+<section class="enhanced-section" id="radarSection" style="display:none;">
+  <h3>才干雷达图</h3>
+  <div class="radar-wrap"><canvas id="radarChart"></canvas></div>
+</section>
+
+<section class="enhanced-section" id="domainSection" style="display:none;">
+  <h3>四大领域分布</h3>
+  <div class="domain-dist" id="domainDist"></div>
+</section>
+
+<section class="enhanced-section" id="rankingSection" style="display:none;">
+  <h3>全部 34 项排名</h3>
+  <table class="ranking-table" id="rankingTable">
+    <thead><tr>
+      <th data-sort="rank">排名</th>
+      <th data-sort="name">才干</th>
+      <th data-sort="score">得分</th>
+      <th>强度</th>
+    </tr></thead>
+    <tbody id="rankingBody"></tbody>
+  </table>
+</section>
+
+<section class="enhanced-section" id="aiSection" style="display:none;">
+  <h3>AI 深度解读</h3>
+  <div class="ai-section">
+    <div class="ai-section__header">
+      <span class="ai-section__badge">AI ANALYSIS</span>
+      <span class="ai-section__title">基于 Top 5 组合的心理画像</span>
+    </div>
+    <div class="ai-section__content" id="aiContent"></div>
+  </div>
+</section>
+
+<section class="enhanced-section" id="chatSection" style="display:none;">
+  <h3>聊天记录交叉分析</h3>
+  <p style="color:var(--g);font-size:13px;margin-bottom:20px;">上传你的聊天记录（txt/csv），本地分析社交行为与才干特质的对应关系。所有数据在浏览器内处理，不上传服务器。</p>
+  <div class="chat-section" id="chatDropZone">
+    <div class="chat-section__icon">&#128172;</div>
+    <p class="chat-section__text">拖拽聊天记录文件到此处，或点击选择</p>
+    <input type="file" class="chat-section__file-input" id="chatFileInput" accept=".txt,.csv">
+    <button class="btn" onclick="document.getElementById('chatFileInput').click()">选择文件</button>
+  </div>
+  <div class="chat-analysis-result" id="chatResult"></div>
+</section>
+
+<section class="enhanced-section" id="shareSection" style="display:none;">
+  <h3>分享你的结果</h3>
+  <div class="share-section">
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px;">
+      <button class="btn btn--red" id="btnShareCard">生成分享卡片</button>
+      <button class="btn" id="btnCopyLink">复制链接</button>
+    </div>
+    <div class="share-preview" id="sharePreview" style="display:none;">
+      <div class="share-card" id="shareCard">
+        <p class="share-card__tag">GALLUP STRENGTHSFINDER</p>
+        <p class="share-card__title">我的五大优势</p>
+        <div class="share-card__list" id="shareList"></div>
+        <div class="share-card__footer">
+          <p>盖洛普优势识别器 · 在线测试</p>
+          <p class="share-card__watermark">gallup-strengths.pages.dev</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <p>盖洛普优势识别器 &copy; 2026 &nbsp;|&nbsp; 基于 Gallup StrengthsFinder 34 项才干主题 &nbsp;|&nbsp; <a href="https://github.com">GitHub</a></p>
+</footer>
+
+<script>
+(function() {
+var QUESTIONS = [{"no": 1, "a": "我乐于助人；", "b": "我喜欢把东西拆开，了解其工作原理和运作的奥妙"}, {"no": 2, "a": "我喜欢与关注未来的人交往；", "b": "我喜欢和历史学家交往"}, {"no": 3, "a": "我想要每个人都喜欢我；", "b": "我想要人们崇拜我"}, {"no": 4, "a": "我力争第一；", "b": "我重在参与"}, {"no": 5, "a": "我一贯努力工作；", "b": "我做事进展较慢，但确保成效"}, {"no": 6, "a": "我思考自身的长处；", "b": "我思考有待改进之处"}, {"no": 7, "a": "我是一个偏重情感的人；", "b": "我是一个偏重理智的人"}, {"no": 8, "a": "我了解别人的个性特点；", "b": "我能够接受各种类型的人"}, {"no": 9, "a": "主动与人交谈使我为难；", "b": "与陌生人攀谈使我兴奋"}, {"no": 10, "a": "我对生活感觉极好；", "b": "我认为我自己很能干"}, {"no": 11, "a": "我喜欢与人合作；", "b": "我喜欢个人奋斗"}, {"no": 12, "a": "我能使别人有成就感；", "b": "我能使别人感到我对他们很重要"}, {"no": 13, "a": "我按照自己的世界观去生活；", "b": "我按照自己的理想去生活"}, {"no": 14, "a": "成为他人的知己使我满足；", "b": "我希望成为他人的领导"}, {"no": 15, "a": "我不在意别人对我的所作所为怎么看，我做对自己有利的事；", "b": "我始终清楚别人对我的看法"}, {"no": 16, "a": "我致力于发展；", "b": "我信守自己的价值观"}, {"no": 17, "a": "我要自己的生活保持平衡；", "b": "我希望我的家庭过最好的生活"}, {"no": 18, "a": "我每天多次谈到自己对未来的展望；", "b": "我愿腾出时间思考未来"}, {"no": 19, "a": "我能够使别人兴奋起来；", "b": "我能够使别人平静下来"}, {"no": 20, "a": "我一旦作出决定就必须付诸行动；", "b": "我在行动之前需要确认自己行动无误"}, {"no": 21, "a": "我比大多数人更加专心去做要完成的事；", "b": "我统观全局顺其自然"}, {"no": 22, "a": "我认为世上没有巧合，一切都事出有因；", "b": "对我来说巧合指运气、机遇、侥幸、偶然"}, {"no": 23, "a": "我善于交谈；", "b": "我善于倾听"}, {"no": 24, "a": "我喜欢表扬别人；", "b": "我喜欢受到表扬"}, {"no": 25, "a": "我喜欢竞赛；", "b": "我喜欢工作"}, {"no": 26, "a": "我思考问题脚踏实地，善于借助专家寻找正确答案；善于借助专家寻找正确答案；", "b": "我思考问题善于创造，且有战略眼光，对规律和问题一目了然"}, {"no": 27, "a": "我充满活力，满怀喜悦和欢乐；", "b": "我了解影响形势的所有因素"}, {"no": 28, "a": "我想成为一家大公司的总裁；", "b": "我为别人牵线搭桥"}, {"no": 29, "a": "我有时会威逼别人；", "b": "我在大人物面前感到渺小"}, {"no": 30, "a": "我能设身处地为别着想；", "b": "我能够爱别人，爱所有的人"}, {"no": 31, "a": "我推动别人成功；", "b": "我使别人快乐"}, {"no": 32, "a": "我是一个无忧无虑的人；", "b": "我比我的朋友、同事更成熟"}, {"no": 33, "a": "我尽量与别人一起做事；", "b": "我喜欢为别人张罗"}, {"no": 34, "a": "通过研究我的历史我可以预测未来；", "b": "我的过去与我的未来无关"}, {"no": 35, "a": "我属于超越自我的宏观世界；", "b": "我是一个脚踏实地的人"}, {"no": 36, "a": "我要我的工作和生活融为一体；", "b": "工作只是一种谋生的手段"}, {"no": 37, "a": "有人不喜欢我时，我会感到沮丧；", "b": "如果自己认为不对的事，就会感到内疚"}, {"no": 38, "a": "我组织；", "b": "我分析"}, {"no": 39, "a": "我能把握对别人的谈话要点，使他们感觉良好；", "b": "我通过倾听，使人们感觉获得理解"}, {"no": 40, "a": "我喜欢富于哲理的人；", "b": "我喜欢和勤奋而富有成效的人交往"}, {"no": 41, "a": "我乐于使别人认识其自身的价值；", "b": "我乐于使别人有成就感"}, {"no": 42, "a": "我靠直觉解决问题；", "b": "我使用来源可靠的准确信息"}, {"no": 43, "a": "我对生活持有一种健康的怀疑态度；", "b": "我相信自己与全人类相连"}, {"no": 44, "a": "我的朋友请我讲故事；", "b": "我的朋友请我出主意"}, {"no": 45, "a": "我在上午工作效率最高；", "b": "我在晚上工作效率最高"}, {"no": 46, "a": "我与大多数人比不相上下，无需工作更努力，更持久；", "b": "我精力充沛，始终比大多数人工作更努力，更持久"}, {"no": 47, "a": "任何与体育有关的事都会强烈吸引我；", "b": "任何与人文思想有关的事都会强烈吸引我；"}, {"no": 48, "a": "我是一个十分整洁的人；", "b": "我非常固执"}, {"no": 49, "a": "我通过与别人分享而成长；", "b": "我通过学习而成长"}, {"no": 50, "a": "我按照自己对未来的书面规划而行动；", "b": "我走一步，看一步"}, {"no": 51, "a": "我注重未来可能取得的成就；", "b": "我注重应对未来可能发生的事件"}, {"no": 52, "a": "我不排斥任何人，从而不伤害他们的感情；", "b": "我仔细挑选我的朋友"}, {"no": 53, "a": "我不自负，不在乎别人是否把我视为可信、专业化或成功人士；", "b": "别人是否把我视为可信、专业化或成功人士对我很重要；"}, {"no": 54, "a": "我喜欢了解大战的起因；", "b": "我喜欢了解50年后的世界经济"}, {"no": 55, "a": "我对我生活中的遇到事件进行分析；", "b": "我对影响我生活的事件充满激情"}, {"no": 56, "a": "我通过发挥自身的才干取得进步；", "b": "我通过克服自身的弱点取得进步；"}, {"no": 57, "a": "对我来说每件事都必须事先计划；", "b": "我喜欢顺其自然"}, {"no": 58, "a": "我寻找各种不同的做事方法；", "b": "我确立常规的做事方法"}, {"no": 59, "a": "我讨厌爱发脾气的人；", "b": "我认为必要时可以发脾气"}, {"no": 60, "a": "我喜欢放松；", "b": "我喜欢清扫"}, {"no": 61, "a": "有钱就是幸福；", "b": "有钱不等于幸福"}, {"no": 62, "a": "我征求别人的意见；", "b": "别人征求我的意见"}, {"no": 63, "a": "我认为平等对待所有人，并制定明确的规则至关重要；", "b": "我认为应了解每个人的特点，并进行个别激励"}, {"no": 64, "a": "我借助专家寻找正确答案；", "b": "我对答案和问题一目了然"}, {"no": 65, "a": "我非常慷慨地称赞别人；", "b": "我有选择地称赞别人"}, {"no": 66, "a": "我只有在竞争中赢得第一才能感到完全满意；", "b": "我只要在比赛中名列前茅就感到高兴"}, {"no": 67, "a": "我善于使截然不同的人相互合作；", "b": "我有平等对待人的天赋"}, {"no": 68, "a": "我尽量不离开自己舒适的领地；", "b": "我是一个寻求刺激的人"}, {"no": 69, "a": "我能够体会同事的感受；", "b": "我喜欢和同事们高谈阔论"}, {"no": 70, "a": "我关注人们的特点，而不在乎我是否喜欢他们；", "b": "我不喜欢某些人，他们和我格格不入"}, {"no": 71, "a": "我凭感觉进行重要决策；", "b": "我凭理智进行重要决策；"}, {"no": 72, "a": "我随着事情的发生采取行动；", "b": "我分清事情的轻重缓急，然后采取行动"}, {"no": 73, "a": "我喜欢每个人；", "b": "我要每个人都喜欢我"}, {"no": 74, "a": "根据当前的需要，我主要专著做好眼前的事；", "b": "我着眼于未来的发展"}, {"no": 75, "a": "我每周设定业绩目标；", "b": "我的工作根据当日需求而定"}, {"no": 76, "a": "我必须强迫自己才能学习；", "b": "我对自己感兴趣的事能集中注意力"}, {"no": 77, "a": "我喜欢要求精确性的工作；", "b": "我喜欢团队合作"}, {"no": 78, "a": "我研究别人的行为根源；", "b": "我惯于自我反思"}, {"no": 79, "a": "我按部就班；", "b": "我热情洋溢"}, {"no": 80, "a": "我对教育满怀热忱；", "b": "我对消除暴利满怀热忱"}, {"no": 81, "a": "我喜欢别人听我讲话；", "b": "我喜欢听别人讲话"}, {"no": 82, "a": "我很会讲故事；", "b": "我善于辅导"}, {"no": 83, "a": "我喜欢讲话；", "b": "我喜欢思考"}, {"no": 84, "a": "我是个完美主义者；", "b": "我是个实干家"}, {"no": 85, "a": "我思考问题脚踏实地,广泛调查分析；", "b": "我思考问题善于创造，且具有战略眼光"}, {"no": 86, "a": "我总是描准最出色的同行去改进自己；", "b": "我愿意与欣赏我的长处的人交往"}, {"no": 87, "a": "我能同时照顾好几件事；", "b": "我愿意为别人作出牺牲"}, {"no": 88, "a": "我善于交际；", "b": "我喜欢与朋友一道努力工作"}, {"no": 89, "a": "我思维敏捷,经常提出独特的观点；", "b": "我的谈话使人愉快"}, {"no": 90, "a": "我热爱学习；", "b": "我喜欢外出"}, {"no": 91, "a": "我喜欢一切按照规章制度办事；", "b": "我喜欢反复检查，确保一切井井有条"}, {"no": 92, "a": "我善于观察人们之间的区别；", "b": "我平等对待所有人"}, {"no": 93, "a": "我的成功之道在于克服弱点，弥补缺陷；", "b": "我的成功之道在于增强自身的才干"}, {"no": 94, "a": "在遇到困难，而必须圆满完成任务时，我往往亲自动手干；", "b": "在遇到困难，而必须圆满完成任务时，我往往依靠团队成员的各自优势，而不事必躬亲"}, {"no": 95, "a": "我的性格外向；", "b": "在必要时我能够作到开朗大方"}, {"no": 96, "a": "我喜欢解释事情；", "b": "我喜欢做事情"}, {"no": 97, "a": "有时也可以歪曲事实；", "b": "永远没有理由说谎"}, {"no": 98, "a": "我的工作已经满负荷；", "b": "我还有很大潜力"}, {"no": 99, "a": "我以严谨著称；", "b": "我以幽默感著称"}, {"no": 100, "a": "我正在创造我的未来；", "b": "我正在研究我的未来"}, {"no": 101, "a": "我喜欢挑战别人；", "b": "我喜欢鼓励别人"}, {"no": 102, "a": "我是一个非常在意隐私的人；", "b": "我的生活如同一本开启的书"}, {"no": 103, "a": "我慷慨；", "b": "我节俭"}, {"no": 104, "a": "我是一名领导者；", "b": "我是一名很有成就的人"}, {"no": 105, "a": "我有时会奉承别人；", "b": "我为人正直"}, {"no": 106, "a": "我能根据需要长时间学习；", "b": "我能够集中注意力的时间很短"}, {"no": 107, "a": "我避免过分赞扬人，因此当我这样做时就显得很有份量；", "b": "我慷慨地赞扬我的同事"}, {"no": 108, "a": "我愿意了解新事物；", "b": "我的价值观很稳定"}, {"no": 109, "a": "我的生活有目的；", "b": "我的生活充满欢乐"}, {"no": 110, "a": "我喜欢富有哲理的讨论；", "b": "我喜欢制定目标的会议"}, {"no": 111, "a": "我喜欢独处；", "b": "我想念我的朋友"}, {"no": 112, "a": "我想象未来；", "b": "我理解造成当前情形的原因"}, {"no": 113, "a": "我能够实事求是地看待自己；", "b": "我难于坦诚地看待自己"}, {"no": 114, "a": "我愿意花大量的时间和朋友们在一起；", "b": "我喜欢专心做我认为重要的事情"}, {"no": 115, "a": "我小时候喜欢和一大帮朋友们一起玩；", "b": "我小时候循规蹈矩从不给同伴或大人惹麻烦"}, {"no": 116, "a": "我喜欢招待别人；", "b": "我答应别人的事一定要完成"}, {"no": 117, "a": "我讨厌受控制；", "b": "我喜欢制定规矩"}, {"no": 118, "a": "我是一个好老师；", "b": "我是一个好顾问"}, {"no": 119, "a": "我躲避大大咧咧的人；", "b": "我不与不诚实的人交往"}, {"no": 120, "a": "情况不明时我会向心中有数的人求教；", "b": "无论何时何地我总能悟出该作什么"}, {"no": 121, "a": "目标不明的人使我厌烦；", "b": "我不喜欢和无法放松的相处"}, {"no": 122, "a": "我厌恶期限；", "b": "我的责任感给我动力"}, {"no": 123, "a": "我鼓励别人；", "b": "我强化别人"}, {"no": 124, "a": "我过于轻信别人；", "b": "我过于雄心勃勃"}, {"no": 125, "a": "过去发生的事激励我；", "b": "未来可能取得的成就激励我"}, {"no": 126, "a": "最后一刻压力使我思想高度集中；", "b": "当我能提前完成任务时，我的思维更清晰"}, {"no": 127, "a": "我认为只要环境合适，大多数人都会偷窃；", "b": "我认为偷窃的人应受到惩罚"}, {"no": 128, "a": "我的最大愿望是做自己热爱的工作；", "b": "我的最大需求是被别人接受"}, {"no": 129, "a": "我是一个通情达理的人；", "b": "我是一个有责任心的人"}, {"no": 130, "a": "我主要关注此时此地；", "b": "我通过研究过去，增长见识"}, {"no": 131, "a": "我尽力而为使我感到满足；", "b": "我立志有所建树"}, {"no": 132, "a": "我有强烈的求知欲；", "b": "我需要被别人认知和理解"}, {"no": 133, "a": "我经常考虑因果关系；", "b": "我遇到事情及时应对"}, {"no": 134, "a": "寻找失败的原因；", "b": "享受目前的成功"}, {"no": 135, "a": "我喜欢收藏；", "b": "我只收集我认为十分精美或特别有价值的东西"}, {"no": 136, "a": "我常常能提出建设性的意见；", "b": "当解决了难题、排除了故障时我感到特有成就感"}, {"no": 137, "a": "我待人随和；", "b": "我善于发挥不同的人的长处"}, {"no": 138, "a": "我花较多的时间考虑如何取得竞争优势；", "b": "我花更多时间考虑如何应对未来可能发生的问题；"}, {"no": 139, "a": "我认为竞争才能发挥人的最大潜能，所以我刺激我的员工相互竞争", "b": "我能使很多人在一起同甘共苦相互合作，并建立很深的友谊"}, {"no": 140, "a": "我常常从失败中总结教训；", "b": "我只关注如何把我最擅长的事做得尽善尽美"}, {"no": 141, "a": "我尽力使别发挥其特长；", "b": "我尽力使每个人得到进步"}, {"no": 142, "a": "把晚间、周末工作时间加起来，我通常一周工作40-50小时；", "b": "把晚间、周末工作时间加起来，我通常一周工作60超过小时"}, {"no": 143, "a": "我轻松愉快；", "b": "我严肃认真"}, {"no": 144, "a": "开始新任务对我很容易；", "b": "我的问题是做事有始有终"}, {"no": 145, "a": "我能和所有的人和睦相处；", "b": "我仔细分析我的合作伙伴,尽可能了解每个人的个性和背景"}, {"no": 146, "a": "我兴趣广泛，好奇心强；", "b": "我专注把握我感兴趣的事做好，"}, {"no": 147, "a": "我观察生活；", "b": "我主宰自己的生活"}, {"no": 148, "a": "为了解决一个问题，我常契而不舍地长时间工作；", "b": "我最多只能集中精力工作学习一个小时左右"}, {"no": 149, "a": "我的成就非凡；", "b": "我一贯创造积极成果"}, {"no": 150, "a": "我比别人更机智；", "b": "我在很多人面前感到渺小"}, {"no": 151, "a": "我善于高效率地同时作几件事；", "b": "我习惯于一次只做一件事"}, {"no": 152, "a": "我希望经常与我的上司和同事沟通；", "b": "我希望有更多的自己独立支配的时间"}, {"no": 153, "a": "我善于构思并发起一个新项目；", "b": "我善于组织落实"}, {"no": 154, "a": "我经常思考数字；", "b": "我喜欢思考宏观形象的事情"}, {"no": 155, "a": "我偏爱讨论思想；", "b": "我偏爱体育运动"}, {"no": 156, "a": "我的词汇富于哲理；", "b": "我的词汇偏重实用"}, {"no": 157, "a": "我使用简短的词汇；", "b": "我常用复杂抽象的词汇"}, {"no": 158, "a": "我的大脑不停地思考；", "b": "我的身体需要经常活动"}, {"no": 159, "a": "我喜欢听讲；", "b": "我喜欢小组讨论"}, {"no": 160, "a": "帮助别人解决难题，排除故障使我感到快乐；", "b": "从数据中发现规律使我感到兴奋；"}, {"no": 161, "a": "我关注分析时事；", "b": "我不花时间去关注时事"}, {"no": 162, "a": "我总能及时完成任务；", "b": "我言而有信，说到做到"}, {"no": 163, "a": "一个新创意会使我激动不已；", "b": "完成一件交给我的任务会使我激动不已"}, {"no": 164, "a": "和别人一起时我觉得我的点子最多；", "b": "我喜欢和别人一起讨论解决问题的办法"}, {"no": 165, "a": "我能详细解释复杂过程；", "b": "我有化繁为简的天赋"}, {"no": 166, "a": "我能一晚读完200页的书；", "b": "我阅读速度缓慢，因为我要琢磨理解书中的内容"}, {"no": 167, "a": "取胜最重要；", "b": "按规矩做事最重要"}, {"no": 168, "a": "我的哲学指引我的生活；", "b": "我的主导自己的生活"}, {"no": 169, "a": "我每周至少花5个小时独自思考；", "b": "我喜欢和别人在一起"}, {"no": 170, "a": "我了解自身长处超过弱点；", "b": "我了解自身弱点超过长处"}, {"no": 171, "a": "我不在乎别人是否喜欢我；", "b": "我热爱人们"}, {"no": 172, "a": "我喜欢和别人谈起我的旅行经历；", "b": "我不断策划我的下一个旅行目标"}, {"no": 173, "a": "我经常以我的亲身经历教育别人；", "b": "我喜欢树立榜样激励别人"}, {"no": 174, "a": "我认为一个好的领导就是要能够调动别人做事；", "b": "我认为一个好的领导就是要帮助别人更好地做事"}, {"no": 175, "a": "我善于处理纷繁复杂的事务；", "b": "我喜欢制定统一的常规制度"}, {"no": 176, "a": "我习惯于根据统计数字预测未来；", "b": "我习惯于根据当前形势预测未来"}, {"no": 177, "a": "我特别善于通过例举过去已取得的成就来鼓舞别人；", "b": "我特别善于通过描绘未来远景鼓励别人"}, {"no": 178, "a": "我有几个特别要好的老朋友；", "b": "我认识的很多朋友，但几乎没有交情很深的"}, {"no": 179, "a": "我习惯于事先想好将要采购商品的标准，只要看到基本符合我需求的商品立刻就买；", "b": "我事先不考虑太多，到了商场现场，调查一遍之后，再决定购买"}, {"no": 180, "a": "遇到故障或困难时，我常常一马当先；", "b": "遇到故障或困难时,我往往首先想到找个能人来解决"}];
+var SCORING = {"1": {"A": ["信仰", "体谅", "交往", "排难"], "B": ["分析", "学习"]}, "2": {"A": ["前瞻"], "B": ["回顾"]}, "3": {"A": ["取悦"], "B": ["追求"]}, "4": {"A": ["成就", "竞争", "完美"], "B": ["学习"]}, "5": {"A": ["成就"], "B": ["责任"]}, "6": {"A": ["完美"], "B": ["追求"]}, "7": {"A": ["信仰", "体谅", "公平", "取悦"], "B": ["分析", "统筹", "统率", "审慎", "战略"]}, "8": {"A": ["体谅", "个别"], "B": ["公平", "包容"]}, "9": {"A": ["审慎"], "B": ["取悦"]}, "10": {"A": ["积极"], "B": ["自信"]}, "11": {"A": ["包容", "交往"], "B": ["思维", "自信"]}, "12": {"A": ["伯乐"], "B": ["统率"]}, "13": {"A": ["信仰"], "B": ["完美"]}, "14": {"A": ["交往"], "B": ["统率"]}, "15": {"A": ["统率"], "B": ["体谅"]}, "16": {"A": ["前瞻"], "B": ["信仰"]}, "17": {"A": ["审慎"], "B": ["完美", "追求"]}, "18": {"A": ["前瞻"], "B": ["追求", "战略"]}, "19": {"A": ["积极"], "B": ["和谐"]}, "20": {"A": ["行动"], "B": ["审慎"]}, "21": {"A": ["专注"], "B": ["适应"]}, "22": {"A": ["关联"], "B": ["适应"]}, "23": {"A": ["沟通"], "B": ["体谅"]}, "24": {"A": ["伯乐", "积极", "取悦"], "B": ["成就", "追求"]}, "25": {"A": ["竞争"], "B": ["交往"]}, "26": {"A": ["关联"], "B": ["理念", "思维", "战略"]}, "27": {"A": ["审慎", "积极"], "B": ["分析"]}, "28": {"A": ["成就", "统率", "追求"], "B": ["伯乐"]}, "29": {"A": ["统率"], "B": ["统率", "和谐"]}, "30": {"A": ["体谅", "个别"], "B": ["信仰", "公平"]}, "31": {"A": ["伯乐"], "B": ["积极"]}, "32": {"A": ["积极"], "B": ["统筹", "审慎", "战略"]}, "33": {"A": ["和谐", "包容"], "B": ["统筹", "伯乐", "排难", "取悦"]}, "34": {"A": ["回顾"], "B": ["适应"]}, "35": {"A": ["前瞻"], "B": ["行动"]}, "36": {"A": ["信仰"], "B": ["适应"]}, "37": {"A": ["追求"], "B": ["责任"]}, "38": {"A": ["行动", "统率"], "B": ["分析"]}, "39": {"A": ["沟通", "体谅"], "B": ["取悦"]}, "40": {"A": ["理念"], "B": ["行动"]}, "41": {"A": ["个别"], "B": ["积极"]}, "42": {"A": ["适应", "自信"], "B": ["分析", "审慎", "搜集"]}, "43": {"A": ["分析", "审慎"], "B": ["关联"]}, "44": {"A": ["沟通"], "B": ["排难", "战略"]}, "45": {"A": ["行动"], "B": ["思维"]}, "46": {"A": ["自信"], "B": ["成就"]}, "47": {"A": ["行动"], "B": ["理念", "思维"]}, "48": {"A": ["行动"], "B": ["统率", "自信"]}, "49": {"A": ["交往"], "B": ["搜集", "思维", "学习"]}, "50": {"A": ["纪律"], "B": ["适应", "和谐"]}, "51": {"A": ["前瞻"], "B": ["审慎", "战略"]}, "52": {"A": ["公平", "和谐"], "B": ["审慎"]}, "53": {"A": ["关联"], "B": ["竞争", "追求"]}, "54": {"A": ["回顾"], "B": ["前瞻"]}, "55": {"A": ["分析", "回顾", "思维", "完美"], "B": ["前瞻", "积极"]}, "56": {"A": [], "B": ["回顾", "完美"]}, "57": {"A": ["纪律"], "B": ["适应"]}, "58": {"A": ["个别"], "B": ["纪律", "公平"]}, "59": {"A": ["关联"], "B": ["统率"]}, "60": {"A": ["积极"], "B": ["纪律"]}, "61": {"A": ["积极"], "B": ["关联"]}, "62": {"A": ["关联", "和谐", "包容", "搜集"], "B": ["统筹", "统率", "战略"]}, "63": {"A": ["公平"], "B": ["个别"]}, "64": {"A": ["搜集"], "B": ["思维"]}, "65": {"A": ["积极"], "B": ["审慎"]}, "66": {"A": ["成就", "竞争", "完美", "追求"], "B": ["学习", "积极"]}, "67": {"A": ["和谐", "个别", "交往"], "B": ["公平"]}, "68": {"A": ["审慎"], "B": ["自信"]}, "69": {"A": ["体谅", "和谐", "个别"], "B": ["沟通", "包容", "取悦"]}, "70": {"A": ["个别", "搜集"], "B": ["审慎"]}, "71": {"A": ["自信"], "B": ["分析", "审慎", "战略"]}, "72": {"A": ["适应"], "B": ["统筹"]}, "73": {"A": ["体谅"], "B": ["取悦"]}, "74": {"A": ["适应", "专注"], "B": ["前瞻", "战略"]}, "75": {"A": ["纪律", "专注", "前瞻"], "B": ["适应"]}, "76": {"A": [], "B": ["专注", "思维", "学习"]}, "77": {"A": ["纪律"], "B": ["包容", "交往"]}, "78": {"A": ["分析", "关联"], "B": ["思维"]}, "79": {"A": ["统筹", "纪律", "专注"], "B": ["适应", "积极"]}, "80": {"A": ["信仰"], "B": ["排难"]}, "81": {"A": ["统率"], "B": ["体谅"]}, "82": {"A": ["沟通", "回顾"], "B": ["伯乐"]}, "83": {"A": ["沟通"], "B": ["思维"]}, "84": {"A": ["竞争", "完美"], "B": ["行动"]}, "85": {"A": ["行动", "分析", "搜集"], "B": ["理念", "战略"]}, "86": {"A": ["成就", "竞争", "搜集", "学习", "追求"], "B": ["完美"]}, "87": {"A": ["统筹"], "B": ["信仰"]}, "88": {"A": ["沟通", "交往", "取悦"], "B": ["和谐", "包容"]}, "89": {"A": ["理念"], "B": ["沟通", "交往", "取悦"]}, "90": {"A": ["学习"], "B": ["行动", "搜集"]}, "91": {"A": ["审慎", "纪律", "公平"], "B": ["审慎"]}, "92": {"A": ["体谅", "个别"], "B": ["公平"]}, "93": {"A": ["责任", "追求"], "B": ["完美"]}, "94": {"A": ["行动", "责任"], "B": ["统筹", "统率"]}, "95": {"A": ["沟通", "取悦"], "B": ["体谅"]}, "96": {"A": ["战略"], "B": ["行动"]}, "97": {"A": ["适应"], "B": ["信仰", "纪律"]}, "98": {"A": [], "B": ["自信"]}, "99": {"A": ["纪律"], "B": ["沟通", "积极"]}, "100": {"A": ["行动"], "B": ["前瞻", "战略"]}, "101": {"A": ["自信", "追求"], "B": ["伯乐"]}, "102": {"A": ["审慎"], "B": ["交往"]}, "103": {"A": ["审慎", "交往"], "B": []}, "104": {"A": ["统率", "责任"], "B": ["成就"]}, "105": {"A": ["取悦"], "B": ["审慎"]}, "106": {"A": ["专注", "学习"], "B": ["专注"]}, "107": {"A": ["审慎"], "B": ["取悦"]}, "108": {"A": ["搜集"], "B": ["信仰"]}, "109": {"A": ["成就"], "B": ["积极"]}, "110": {"A": ["理念"], "B": ["成就"]}, "111": {"A": ["思维"], "B": ["交往"]}, "112": {"A": ["前瞻"], "B": ["分析", "关联", "回顾"]}, "113": {"A": ["关联"], "B": ["自信"]}, "114": {"A": ["交往"], "B": ["专注"]}, "115": {"A": ["包容"], "B": ["纪律"]}, "116": {"A": ["包容"], "B": ["责任"]}, "117": {"A": ["追求"], "B": ["纪律"]}, "118": {"A": ["沟通"], "B": ["伯乐", "排难"]}, "119": {"A": [], "B": ["信仰", "责任"]}, "120": {"A": ["搜集"], "B": ["自信"]}, "121": {"A": ["追求"], "B": ["积极"]}, "122": {"A": ["适应"], "B": ["纪律", "责任"]}, "123": {"A": ["伯乐", "包容"], "B": []}, "124": {"A": ["交往"], "B": ["自信"]}, "125": {"A": ["回顾"], "B": ["成就", "前瞻"]}, "126": {"A": ["统筹", "责任", "排难"], "B": []}, "127": {"A": ["适应"], "B": ["信仰", "责任"]}, "128": {"A": ["信仰", "学习"], "B": ["追求"]}, "129": {"A": ["体谅", "公平"], "B": ["责任"]}, "130": {"A": ["专注"], "B": ["回顾"]}, "131": {"A": ["和谐", "学习"], "B": ["成就", "追求"]}, "132": {"A": ["学习"], "B": ["追求"]}, "133": {"A": ["分析", "战略"], "B": ["行动"]}, "134": {"A": ["分析", "关联", "回顾"], "B": ["成就"]}, "135": {"A": ["搜集"], "B": ["完美"]}, "136": {"A": ["理念"], "B": ["成就", "排难"]}, "137": {"A": ["公平", "包容", "取悦"], "B": ["伯乐", "个别", "完美"]}, "138": {"A": ["竞争"], "B": ["前瞻", "排难", "战略"]}, "139": {"A": ["竞争", "公平", "排难"], "B": ["沟通", "关联", "和谐", "包容", "交往"]}, "140": {"A": ["分析", "回顾", "排难"], "B": ["专注", "思维", "学习", "完美"]}, "141": {"A": ["伯乐", "个别", "完美"], "B": ["公平"]}, "142": {"A": [], "B": []}, "143": {"A": [], "B": ["成就", "竞争", "纪律", "责任", "战略"]}, "144": {"A": ["行动"], "B": ["责任"]}, "145": {"A": ["沟通", "竞争", "关联", "体谅", "公平", "和谐", "包容", "取悦"], "B": ["审慎", "伯乐", "个别", "搜集"]}, "146": {"A": ["搜集"], "B": ["专注", "思维", "完美"]}, "147": {"A": ["适应", "体谅", "和谐"], "B": ["统筹", "理念", "自信"]}, "148": {"A": ["专注", "排难"], "B": []}, "149": {"A": ["成就", "竞争", "完美", "自信"], "B": ["学习"]}, "150": {"A": ["统筹", "竞争", "理念", "战略"], "B": ["和谐"]}, "151": {"A": ["统筹"], "B": ["专注"]}, "152": {"A": ["适应", "沟通", "关联", "包容", "个别", "搜集"], "B": ["思维", "追求"]}, "153": {"A": ["统率", "理念", "战略"], "B": ["行动", "排难"]}, "154": {"A": ["专注"], "B": ["统率", "理念", "战略"]}, "155": {"A": ["理念", "思维", "学习"], "B": ["竞争"]}, "156": {"A": ["理念"], "B": ["行动"]}, "157": {"A": ["沟通"], "B": ["分析"]}, "158": {"A": ["理念", "思维"], "B": ["行动"]}, "159": {"A": ["和谐"], "B": ["包容"]}, "160": {"A": ["成就", "信仰", "责任", "排难"], "B": ["分析"]}, "161": {"A": ["理念", "思维", "学习"], "B": []}, "162": {"A": ["纪律"], "B": ["信仰", "责任"]}, "163": {"A": ["理念", "责任"], "B": ["专注"]}, "164": {"A": ["理念", "思维"], "B": ["关联", "包容", "个别"]}, "165": {"A": ["分析", "专注", "思维"], "B": ["理念"]}, "166": {"A": ["分析"], "B": ["学习"]}, "167": {"A": ["成就", "竞争", "个别"], "B": ["纪律", "公平"]}, "168": {"A": ["信仰"], "B": ["自信", "战略"]}, "169": {"A": ["思维"], "B": ["关联", "和谐", "包容"]}, "170": {"A": ["完美"], "B": ["关联"]}, "171": {"A": ["自信"], "B": ["信仰"]}, "172": {"A": ["回顾"], "B": ["前瞻"]}, "173": {"A": ["回顾", "伯乐"], "B": ["竞争", "搜集"]}, "174": {"A": ["统筹"], "B": ["伯乐"]}, "175": {"A": ["适应", "统筹"], "B": ["纪律", "公平"]}, "176": {"A": ["回顾"], "B": ["前瞻"]}, "177": {"A": ["回顾", "伯乐", "搜集"], "B": ["沟通", "伯乐", "前瞻"]}, "178": {"A": ["交往"], "B": ["取悦"]}, "179": {"A": ["战略"], "B": ["适应", "搜集"]}, "180": {"A": ["排难", "自信"], "B": ["关联", "伯乐", "个别"]}};
+var STRENGTH_DATA = {"成就": {"no": 1, "short_desc": "成就主题较强的人大都精力充沛，锲而不舍。他们乐于忙忙碌碌并有所作为。", "desc": "你的成就主题说明你的内在动力。它表明你始终渴望有所建树。你感到每一天似乎都从零开始。一天结束时，你必须获得某种有形的成果，如此才能感觉良好。你所谓的“每一天”指的是所有的日子-工作日、周末、休假日。无论你多幺需要歇一天，如果这一天你无所事事，你就会感到不满意。你体内有团烈火在熊熊燃烧。它促使你多做事情，多出成果。完成一项任务后，这火会暂时减弱，但很快重新燃起，迫使你朝一个又一个新的目标不断攀登。你对成就的不懈追求或许缺乏逻辑；甚至漫无边际。然而，它却是永无满足的，并将伴随你一生。作为一名追求成就的人，你必须学会与这种隐隐的不满足感相处。它毕竟不无益处。它给你动力，使你能长久工作而不知疲倦。它不失时机地使你奋起，去迎接新的任务和新的挑战。它为你输入充沛的精力，帮助你为你所领导的班组设定工作进度和业绩指标。它是推动你不断前进的主题。2信仰－－自我实现的信徒"}, "信仰": {"no": 2, "short_desc": "有强烈信仰的人必定拥有某种经久不变的核心价值观，并由此形成明确的生活目标。", "desc": "如果你有很强的信仰主题，那你就会持有某些经久不变的核心价值。这些价值因人而异，但你的信仰通常使你关注家庭，乐于助人，甚至追求灵性。无论对己对人，你都珍视责任和伦理。这些核心价值以多种方式影响你的行为。它们赋予你的生活以意义和满足-在你看来，金钱和名望并不完全代表成功。它们为你指明方向，指引你排除生活中的种种引诱和干扰，朝着恒定的目标前进。这种恒定性是你建立所有关系的基础。你的朋友认为你为人可靠；他们会说，“我知道你是什幺立场。”你的信仰为你赢得信任。它还要求你从事与你的价值观相符的工作。你的工作必须有意义；必须“有分量”。因为你受到你的信仰的指引，所以你的工作唯有使你有机会实践自身价值观时才是有意义的。3、自信"}, "自信": {"no": 3, "short_desc": "自信心强的人对自身的能力充满信心。他们有自己的处世准则，做决定时成竹在胸。", "desc": "在你的心灵最深处，你对自己的优势充满信心。你深知你是个有能力的人-有能力冒风险，有能力接受新的挑战，有能力提出要求，并且更重要的是，有能力履行诺言。然而不仅如此，由于具有自信的主题，你不仅对自己的能力，而且对自己的判断充满信心。当你观察世界的时候，你深知你的视点与众不同。而由于没有人看问题的角度与你完全一样，你知道没有人能为你作决定；也没有人能告诉你如何去思考。他们能够引导，能够建议，但只有你才是自己生活的主宰。只有你才有权作结论，下决心，去行动。这种权威，这种对自身生活方向的终极负责，并不使你畏惧。相反，它对于你顺乎自然。无论碰到什幺情况，你似乎总能悟出该做什幺。它也许并不适用于所有的人，但它是特定形势下你该做的事情。这一主题给你罩上一层神机妙算的光环。你与许多人不同，从不轻易被别人的论点所左右，无论他们多幺巧言令色。这种自信既可能深藏不露，也可能一目了然，这取决于你的其它主题，。但它根深蒂固，牢不可破。一如舰船的龙骨，它能抵御各种压力，使你把稳航向。4、行动"}, "行动": {"no": 4, "short_desc": "行动主题较强的人能够将想法付诸行动。他们往往缺乏耐心。", "desc": "“我们什么时候可以开始？”你最爱问这个问题。你急不可耐地要行动。你也许会同意，分析自有它的作用，争辩和讨论有时亦不无真知灼见。但你深知，没有行动，一切皆为空谈。唯有行动才能做事情。唯有行动才能出业绩。一旦作出决定，你就必须行动。别人或许会担忧，“还有些事我们不知道，”但是你不会因此而放慢步伐。如果决定通过城区，你便认定到达目的地的最快途径就是从一个红绿灯走到下一个红绿灯，而不会坐等所有的灯都变绿。此外，在你看来，行动和思考并不互相排斥。事实上，在你的行动才干指引下，你确信最好的办法是干中学。你作出决定，采取行动，检验结果，继而学习进步。在学习的基础上，你决定你未来一步接一步的行动。如果你没有作出反应的对象，你怎么能够进步？你的答案很简单，不能。你必须不断冲锋陷阵。你必须不断走出下一步。否则，你如何保持思维敏锐和耳聪目明？这就是你的底线：你深知评判你的标准不是你的言辞，也不是你的思想，而是你的行动。你丝毫不为此感到畏惧。恰恰相反，你感到快慰。5、专注,目标明确－－人生旅程的导游"}, "专注": {"no": 5, "short_desc": "专注力强的人能够确定方向，贯彻始终，及时调整，矢志不渝。他们先确定重点，再着手行动。", "desc": "“我正走向何方？”你扪心自问。这一问题每天都萦绕脑际。在专注主题的指引下，你需要一个明确的目的地。没有它，你很快就会对自己的生活和工作一筹莫展。因此，每年，每月，甚至每周，你都做你爱做的事-制定目标。你的目标，无论长期或短期，都有相同的特点。它们都很具体，都能评测，并且都有进度表。这些目标如同罗盘，帮助你确定重点，并进行必要的修正，以保持航向。你的专注主题十分强大，因为它迫使你进行过滤-本能地判断某个行动是否有助于你达到目标；无助于此的便被放弃。你的专注最终迫使你提高效率。无庸讳言，这种模式的另一面是，它使你难以忍受拖延、障碍，甚至迂回，而无论它们多幺引人。这使你成为一名极其可贵的团队成员。当别人开始溜向“有趣的”岔道时，你会及时把他们带回正路。你的专注主题提醒每个人，如果一件事不能帮助大家通往目的地，那它就无关紧要。而如果它无关紧要，那就不值得为它浪费时间。你确保每个人都目不斜视。6、追求"}, "追求": {"no": 6, "short_desc": "追求主题较强的人希望在别人的眼中非同凡响。他们独立性强，渴望被承认。", "desc": "你希望在别人的眼中非同凡响。你希望获得真正意义上的“认可”。你希望自己的意见受到重视。你希望出人头地。你希望出名。你尤其希望别人了解和赞赏你的独特优势。你渴望别人赞扬你是一个可信赖和专业化的成功人士。同样，你希望与可信赖和专业化的成功人士交往。如果他们不是这样，你就会推动他们朝此努力，直到成功-否则你就会弃他们而去。你天性独立，希望自己的工作是一种生活方式而不仅仅是一种职业。在工作中，你希望获得充分的自由-按你自己的方式做事的自由。你对自己的渴望感受强烈并付诸行动。为此，你的生活中充斥着你所“需要”，“渴求”，或“热爱”的东西。无论你的目标如何-每个人的目标都与众不同-你的追求主题都将不断将你升高，摆脱平庸，通往卓越。这个主题推动你不断追求。7、适应,适应力强－－处变不惊的鬼灵精"}, "适应": {"no": 7, "short_desc": "适应性强的人倾向于“随大流”。他们活在“当前”，接受现实，随遇而安。", "desc": "你生活在当前。你不把未来视为固定的目的地。相反，你认为未来是你在现有选择的基础上创造出来的。因此，你通过选择逐一发现你的未来。这并不意味着你没有计划。你很可能有。但你的适应主题使你能够自愿地对眼前需求作出反应，即使此举使你偏离原有计划。你与有的人不同，并不讨厌突如其来的要求或出乎意料的曲折。你对此有料在先，它是不可避免的。事实上，在某种意义上，你期待它们发生。你本质上是一个非常灵活的人，即使工作的不同需求把你东拉西扯，你仍能保持高效率。 适应主题的人表现为高度的灵活性。不仅面对变化可以保持高效率，而且事实上喜欢应对不断变化的情况，甚至自己都会去制造变化。具备适应主题的人对长远计划通常是不屑一顾的。很对很对啊。我不仅不喜欢做长远计划，连今天出门是去看电影还是逛公园一般也定不下来。要不是为了考虑到其它人，我大概会乐于在每一个最后时刻改变主意。对于某些人来讲，这种“脚踩西瓜皮”的秉性几乎无法忍受，但是以后我要告诉他们：这叫做“适应”！Adaptive，那可是如今 IT 界最时髦的词汇，包括我所属的那个大公司都以 Adaptive 为核心理念，所以我看公司以后就干脆把我当最优质产品卖出去算了——一个能“适应”的好货色。8、纪律"}, "纪律": {"no": 8, "short_desc": "纪律性强的人做事井然有序，有章有法。他们建立规程，遵章守纪。", "desc": "你的世界必须可以预测，必须井井有条，规划有序。因此，你本能地将你的世界规范化。你建立常规，制定时间表，规定完成任务的日期。你把长期项目划分为一系列具体的短期计划，然后锲而不舍地逐一实施。你并不一定整洁有序，但你的确要求精确。面对生活中内在的混乱，你需要建立控制。常规、时间表、规范-这一切都有助于建立控制感。别人由于缺乏这种纪律主题，有时可能厌恶你建立秩序的需求。但这未必导致冲突。你必须了解，并非人人都象你一样渴求预测-他们自有其做事之道。同样，你也可以帮助他们理解、甚至赞赏你对规思维 思维能力较强的人的最大特点是长于思考。他们勤于自省，敏于探讨。 范的需求。你讨厌意外，憎恶失误，建立常规，注重细节-所有这些无须被视为意欲束缚别人，而应被视为你的一种本能的方法，旨在摈除生活的诸多诱惑，确保进步和效益。9、排难"}, "排难": {"no": 9, "short_desc": "排除故障的行家里手善于发现问题并解决问题。", "desc": "你热衷于排忧解难。其它人遇到新困难往往一筹莫展，而你却干劲倍增。面对分析症状、判断问题和解决问题的挑战，你无比兴奋。你可能会喜欢实际的、抽象的、或个人的问题。你可能会寻找你过去多次遇到并自信能解决的问题。或许当你遇到复杂而陌生的问题时最为激奋。你的具体偏好将取决于你的其它优势和经历。但可以肯定的是，你喜欢手到病除。判断故障，排除问题，起死回生，使你其乐无穷。你本能地感到，没有你的介入，这个东西-这部机器、这个人、这家公司很可能会停转。你修好了它。救活了它。使它重燃生命之火。或者用你自己的话说，你拯救了它。10、回顾，继往开来－－现在与未来的过客:"}, "回顾": {"no": 10, "short_desc": "回顾主题较强的人喜欢追溯从前。他们通过揣摩过去来了解当前。", "desc": "你往回看。你往回看是为了了解当前。你往回看是为了预测未来。你想知道这一切都是如何开始的，所以你购买历史书和人物传记，并且向熟人打听其过去的经历。你往回看，因为答案可以在过去找到。从你的制高点看去，当前变动无常，杂乱无章。唯有回首以往-回到策划之初-当前才重归平稳。以往是一个简明的时代，一个描画蓝图的时代。你回顾以往，目睹蓝图浮现，继而重归初衷。这些蓝图和初衷后来被装饰得面目全非，无从辨认-但是你的回顾主题使它们原形再现。这一认识使你充满信心。你排除了干扰，在了解事物内涵的基础上明智决策。由于了解同事们的来龙去脉，你就能更好地与其合作。并且，由于你看到未来的种子播撒在过去，反而更加明察未来。面对新人和新形势，你需要一些时间来适应。但你必须给自己留出这些时间。你必须迫使自己问这些问题。你必须让蓝图再现，因为无论情况如何，如果你未见蓝图，你就不可能尽你所能。11、公平,讲究公平－－平等的守护者"}, "公平": {"no": 11, "short_desc": "公平心强的人深知应平等待人。他们确立并坚持这一准则，即公平地对待每一个人。", "desc": "平衡对你很重要。你深知需要公平待人，无论其社会地位如何。因此，你不希望天平过于倒向任何个人。你确信这将导致自私自利和个人至上，使某些人凭借关系或背景，或通过贿赂而获得不公平的优势。你对此深恶痛绝。你自视抵御这种倾向的卫士。与这种裙带世界截然相反，你深信只有在规则明确而人人适用的恒定的环境中，才能发挥每个人的最大潜能。因为在这样的环境中，每个人都了解对其的期待，一切都可以预测并不偏不倚。一切都公平。在这里，每个人将有平等的机会施展才华。12、审慎,深思熟虑－－步步为营的沉思者"}, "审慎": {"no": 12, "short_desc": "他们每做一个决定均慎之又慎，并设想所有的困难。", "desc": "你总是小心翼翼、保持高度警戒、注重隐私。你知道世事难料。尽管一切看似井然有序，你仍觉得危机处处。你不否认危险的存在，反而一一挑明危险所在。如此一来，每种危险都能加以鉴定、评估，终能减轻其危险性。因此，你是一个相当严肃的人，以保留的态度看待人生。例如，你喜欢事先计画，预期可能出错之处。你择友谨慎，只跟特定人士谈个人的隐私。你不会过度赞扬或肯定别人，以免遭人误会。如果有人因为你不像其它人一样感情外露而不喜欢你，你也觉得无所谓。对你而言，生命不是一场比人气的竞赛。生命犹如地雷区，依个人抉择，有人可以毫不在乎地跑过去，但是你会找出危险、衡量相关冲击，然后小心踏出步伐，缓步前进。13、前瞻"}, "前瞻": {"no": 13, "short_desc": "对于有较强前瞻力的人而言，未来令人心潮澎湃。他们用对未来的憧憬激励周围的人。", "desc": "“如果这样，那该多好？”你是个喜欢遥望天际的人。未来使你着迷。未来如同墙壁上的投影，在你眼中维妙维肖。这幅细致入微的图画催你奋进，奔向明天。虽然未来图景的具体内容取决于你的其它优势和兴趣-更好的产品，更好的队伍，更好的生活，或更好的世界-但它将永远给你以灵感。你是一个幻想家，能看到未来的种种可能，并珍视这样的想象。当现实使你一筹莫展，而你周围的人又过于世俗时，你就会唤起对未来的憧憬，继而精力倍增，同时振奋别人。事实上，人们往往期待你描述对未来的种种遐想。他们希望看到一幅画卷，来提高他们的眼界，继而燃起激情。你能为他们描绘这幅画卷。不断实践。字斟句酌。越生动越好。人们将拥抱你所带来的希望。14、搜集－－嗜好收藏－－惜物如命的收藏家:"}, "搜集": {"no": 14, "short_desc": "搜集主题较强的人充满好奇。他们通常喜欢搜集、整理各种各样的信息。", "desc": "你充满好奇。你爱攒东西。你可能搜集各种信息，譬如词汇、事实、书籍和语录。你也可能搜集有形的东西，如邮票、标本、古董、老照片等等。无论你搜集什么，你这样做是因为你感兴趣。你好奇心不泯。世界的激动人心之处就在于其多姿多彩，变幻无穷。如果你博览群书，你的目的未必是完善你的理论，而是积累更多的信息。如果你喜欢旅行，那是因为在新的地点你能发现新奇的文物和轶事。这一切均可供收藏。为什么它们值得收藏呢？你在收藏之时，常常说不清何时或为何需要它们。但是，未来会怎样？是啊，谁能说准它们什么时候用得着呢？由于想到各种用途，你什么都不舍不得丢弃。所以你不断搜集、整理和储存坛坛罐罐。这很有趣。它使你思维常新。而且，也许某一天，也许就在这几天，有些东西会变得很珍贵。15、战略，思考周严－－策略在握的先知"}, "战略": {"no": 15, "short_desc": "战略主题较强的人足智多谋。针对不同的方案，能迅速找出相关的模式及结果。", "desc": "战略主题使你能够透过日常琐碎，寻找前进的捷径。它不是一种可以教授的技能，而是一种与众不同的思维方式，一种独特的世界观。有了这种世界观，当别人被复杂的事物所迷惑时，你却能识别其中的规律。你将规律牢记在心，尝试各种不同的方案，不断问自己“如果发生这种情况会怎样？如果发生那种情况会怎样？”这些不断出现的问题帮助你预防不测。如此你便能够精确判断潜在的障碍。你看清各条路径的走向，就能进行筛选。你筛去死路。你筛去直通屏障的路线。你筛去通往混乱和迷茫的路线。你不断筛选，直到你选定一条路线-这就是你的战略。有了战略武装，你开始出击。这就是你的战略主题的运作模式：“倘若……会怎样？”筛选，出击。16、分析"}, "分析": {"no": 16, "short_desc": "分析能力强的人喜欢探究事物的来龙去脉。他们有能力思考可能影响局面的诸多因素。", "desc": "你的分析主题向别人挑战：“证明它。告诉我为什幺你的结论是对的。”面对此种质疑，某些人将发现他们自鸣得意的理论会萎缩和瓦解。而这恰恰是你的目的。你无意扼杀别人的观点，但你认定，他们的理论必须经得起检验。你自视客观和冷静。你喜欢数据，因为它们既不包含特定的价值观念，又没有特殊的目的，且未加修饰。有了数据的武装，你就寻找模式和关联。你想了解某些模式如何互相影响。你的问题是：它们如何组合？它们有什幺结果？这个结果是否与所提出的理论或面临的情形相符？你将表层逐一剥开，直至揭示其中的根源。别人认为你思维逻辑并严谨。久而久之，他们就习惯于请你用你的严谨思维来剖析某些人的“异想天开”和“愚钝”。但愿你的分析不要表述得太尖刻。否则，如果“异想天开”的是他们自己，他们就会刻意回避你。17、思维,愛動腦－－看看別人，想想自己的獨行俠"}, "思维": {"no": 17, "short_desc": "思维能力较强的人的最大特点是长于思考。他们勤于自省，敏于探讨。", "desc": "你喜欢思考。你喜欢思想活动。你喜欢锻炼你的大脑“肌肉”，把它们四面抻扯。这种对思想活动的需求有可能是专注的，专注的焦点取决于你的其它优势。例如，你可能努力解决一个问题，或酝酿一个创意，或了解另一个人的感受。另一方面，这种思维活动很可能漫无边际。思维的主题并不一定限定你思考的具体内容。它只是说你喜欢思考。你是一个喜欢独处的人，因为这样你才能沉思冥想。你性格内向。在某种意义上，你是自己最好的伴侣，因为你扪心自问，并在自己身上测试答案。当你把自己的实际作为与你所思考的所有想法相比时，你的这种自省可能会使你略为不满。但此种自省也可能导致你关注现实问题，例如当日所发生的事件，或你准备进行的一场谈话。无论它把你引向何方，这种不停的思考是你生活中的一个固定内容。18、统筹－－讲求效率与弹性的模范生"}, "统筹": {"no": 18, "short_desc": "统筹力强的人兼具组织能力及确保组织成功的灵活性。他们善于合理安排现有资源以实现最大功效。", "desc": "你是一个杂耍演员。当你面对一个涉及多种因素的复杂环境时，你喜欢把所有这些因素都抛向空中，将它们反复排列，直至你确信形成最佳组合。在你看来，此种行为毫无特别之处。你不过是试图琢磨出做事的最佳方案而已。然而，其它人由于缺乏这一主题，对你的杂耍本领瞠目结舌。他们会问，“你的脑袋里怎幺能同时装这幺多事情呢？”“你怎幺能保持如此灵活，如此不假思索地放弃经过深思熟虑的计划，转而采取你突发奇想的全新方案呢？”但是你无法想象其它的做事方式。你是高度灵活性的杰出代表。如果你发现一个更好的转机地点或更优惠的票价，你就会在最后一刻突然改变旅行计划。同样，你会绞尽脑汁，思考完成一个新项目的最佳人员和资源组合。你事无巨细，总在寻找最佳配置。勿庸置疑，形势越是变化无常，你越能出神入化。有的人面对不测，会一口咬定，经过精心策划的计划不容更改，而另一些人则躲进现有的规则和程序中。你却不然。你奋身投入混乱的局面，设计新方案，搜寻新捷径，思考新合作-不停地玩杂耍。因为说到底，总有可能找到更好的方案。统筹。同意吧？这可绝对算得上一个领导才能。具备这个优势的人能够在涉及多种因素的复杂环境中找出最佳的解决方案。总之，是个处理纷繁复杂局面的能手。而这个优势和第 3 名的收集有着相辅相成的妙处。收集，意味着对一切信息和事物的爱好，所以我显然是一个喜欢并且善于混水摸鱼的人。把局面搞乱是我的特长也是我的兴趣所在，而我就是那个能够乱中取胜的人。当其它人面对千头万绪手足无措的时候，也就是我大展身手的时刻了。了解自己在这两方面的优势是非常重要的，因为我总算明白了为什幺 J 老是觉得我还没有把项目整理好，而我觉得一切已经足够清晰了。道理很简单，他就没有我这样的优势。明天我就要告诉他，虽然他会非常痛苦地发现我总是把一大堆的细枝末节绞和在一起，可是他必须相信我能够在大线团里面找到那个线头。而我不愿意做什幺管理流程也是因为那玩意和我的优势不﻿符，他应该去找具有“纪律”优势的人来做管理流程，其实我看他自己就是那幺一个人。19、关联"}, "关联": {"no": 19, "short_desc": "关联主题较强的人深信世间万物都彼此关联。没有巧合，凡事必有成因。", "desc": "凡事发生必有原因。你对此深信不疑。你深信不疑，是因为你从心底里认为我们都是相互关联的。诚然，我各个有别，各自对自己的判断负责，并保持选择的自由。但是，尽管如此，我们仍然是宏观世界的一部分。有人称其为集体的下意识。还有人称其为灵性或生命之能。但无论你用何种语言，你一想到我们并不相互隔绝，也不与地球及其生命隔绝，就会备添信心。这种关联感包含了某些责任。如果我们都是宏观世界的一部分，我们就绝不能害人-因为害人等于害己。我们绝不能剥削-因为剥削别人等于剥削自己。我们绝不能使人受苦-因为这样做会使我们自己受苦。你对这些责任的意识构成了你的价值体系。你为人周到、体贴和宽容。由于笃信人类大同，你成为沟通不同文化背景的人们的桥梁。仿佛有一只“看不见的手” 指引你，帮你开导别人超越日 常琐事，而看到更高尚的目标。你的具体信仰固然取决于你的人生经历和文化，但是你的信仰十分坚定。它 使你和你的朋友面对人生之秘而持之以恒 。20、理念"}, "理念": {"no": 20, "short_desc": "他们痴迷于各种理念，能够从貌似毫无关联的现象中找出其相互联系。", "desc": "你为理念而痴迷。什幺是理念？理念就是概念，就是对大部分事件的最合理的解释。当你透过复杂的表层，发现一个精彩而简明的概念，继而解释事物的本质时，你会喜不自胜。理念是一种关联。你的头脑总在寻找关联；因此，当表面截然不同的现象被某个不起眼的纽带联系在一起时，你会感到新奇。一个理念是对习以为常的挑战的全新见解。你乐于将我们熟知的世界转一个圈，让我们从一个陌生但充满新意的角度看它。你喜爱所有这些理念。因为它们深刻。因为它们新颖。因为它们能正本清源。因为它们引发争论。因为它们怪诞。由于所有这些原因，每当你产生一个新理念时，你都为之一振。别人可能视你为锐意创新、标新立异、富于理性或聪明过人。也许这些你都是。谁能说得准呢？你确信无疑的是理念使你激动不已。而大多数日子里，这就足够了。21、学习"}, "学习": {"no": 21, "short_desc": "学习能力强的人有旺盛的求知欲，渴望不断提高自我。尤其令他们激动的，是求知的过程而非结果。", "desc": "你热爱学习。你最感兴趣的题目取决于你的其它主题和经历。但无论是什幺题目，你总是受到学习过程的吸引。过程，而不是内容或结果，最使你兴奋。从无知到熟练的扎实而执着的进程使你精力倍增。入门的快感；初学者背诵或实践学到的内容；掌握一门新技术而日益增强的信心-这些学习的过程深深吸引着你。你对学习的激情促使你参加各种成人教程-太极拳、外语、钢琴、舞蹈或电脑培训班等等。它使你能在变动无常的环境中应付自如，无论是分配你完成一个应急项目，还是反复要求你在短时间内成为某个新题目的行家。学习主题并不一定意味着你力图成为某个专题的专家，或追求伴随某种专业或学术头衔的荣耀。相比之下，更重要的是学习的“路程”，而不是具体结果。22、包容－－有容乃大的慈善家"}, "包容": {"no": 22, "short_desc": "包容－－有容乃大的慈善家，包容力强的人善于接纳人。他们关心那些被忽略的人们，并让他们溶入集体。", "desc": "“扩大圈子”。这就是你的人生准则。你希望拉人入伙，使他们感到自己是团队的成员。有的人只参加排外的小团体；你截然不同，处处避免排外团体。你希望扩大团体，使尽可能多的人受益于团体的支持。你最不愿目睹有人站在圈外旁观。孤立的感觉是多幺冰冷。你会说，“扩大圈子，请他们进来，给他们温暖。”你天生是一个来者不拒的人。无论什幺种族、性别、国籍、性格，还是信仰，你从不妄作评判。评判可能伤及他人的感情。不到万不得已，何必这幺做呢？你之所以来者不拒，并不是因为你深信人各有别，继而应当彼此尊重差异，而是因为你确信我们在本质上彼此相同。我们一样特殊，一样重要。因此，谁也不应被忽视。我们每个人都有份。这是我们的基本权利。23、个别"}, "个别": {"no": 23, "short_desc": "个别主题较强的人对每个人的与众不同之处兴趣盎然。他们善于琢磨如何将个性迥异的人组合在一起，创造出最大成效。", "desc": "你的个别主题使你对每个人的与众不同之处兴趣盎然。你不能容忍一概而论或简单归类。你深知，如此大而划之会抹煞个人特点。相反，你关注个人差异。你本能地观察每个人的风格、动机、思维方法和交际方式，倾听其独一无二的生活经历。这一才干充分说明你与别人相处的方式。它说明为什幺你能选择恰到好处的生日礼品；为什幺你知道有人喜欢，而有人讨厌当众受表扬；为什幺你能因人施教，对有的人手把手地教，而让别的人“自己琢磨”。由于你密切观察别人的优势，你就能使每个人真正人尽其才。你深知，通过告诉一个人你所看到的具体优势，他/她就会继续挖潜。这一个别主题还有助于你建立高效的团队。有人寻求完美无缺的团队结构或过程，而你的直觉告诉你优秀团队的秘诀在于使每个成员都能做他/她最擅长的工作。24、沟通"}, "沟通": {"no": 24, "short_desc": "沟通能力强的人善于将想法付诸言辞，他们是极佳的交谈者和生动的讲解者。", "desc": "你喜欢解释、描述、主持、演讲和写作。这是你的沟通主题在起作用。概念索然无味。事件平淡无奇。你需要将它们激活，使它们生机勃勃，激动人心，引人入胜。所以你就把事件编成故事，频繁讲述。你用形象、案例和比喻赋予枯燥的概念以生气。你认为大部分人注意力甚短。他们天天受到信息的轰击，但所记寥寥。你希望你所传达的信息--思想、事件、产品的特征和功能，发明或一堂课-被人铭记。你想把他们的注意力吸引过来，然后捕捉和锁定它。这种愿望驱动你搜寻生动而富有感染力的完美词句。正因为如此，别人乐于听你侃侃而谈。你用语言勾画的图象激发他们的兴趣，澄清他们的眼界，并激励他们去行动。25、交往"}, "交往": {"no": 25, "short_desc": "交往能力强的人喜欢人际间的亲密关系。他们最大的满足是与朋友一道为实现一个目标而同舟共济。", "desc": "你的交往主题描述你对人际关系的态度。简言之，交往主题使你与熟人的关系更紧密。你未必羞于结交新人-事实上，你可能有其它主题，使你从结交新朋友中获得无穷乐趣-但你的确从保持密友交往中汲取巨大的欢乐和力量。你对亲密关系感觉自然。事实上，一旦与人结识，你就会有意深化关系。你对朋友敞开心扉。你同样希望成为他们的知己。你希望了解他们的情感、他们的目标、他们的恐惧和他们的梦想；你希望他们用相同的方式了解你。你深知这种密切关系不无风险-别人可能利用你-但你甘愿接受这种风险。对你来说，唯有真诚的关系才有价值。而检验关系是否真诚的唯一方式便是完全信任别人。你与别人分享的越多，你们共同承担的风险就越多。你们共同承担的风险越多，你们各自就越能证明彼此关爱是真诚的。这就是你建立真诚友谊的步骤，而你这样做完全是心甘情愿的。26、和谐,"}, "和谐": {"no": 26, "short_desc": "愛好和諧－－息事寧人的和平天使，和谐主题较强的人渴求协调一致。他们避免冲突，寻求共识。", "desc": "你寻求共识。你认为，冲突和摩擦有害无益，所以你尽量将其化小。当你发现周围的人意见不一时，你力图求同存异。你力图使他们避免对抗，寻求和谐。事实上，和谐是你的核心价值。尽管无济于事，有人却总想将自己的观点强加于人，这在你看来真是难以置信。我们如果避免固执己见，转而寻找共识和支持，岂非效益大增？你对此深信不疑，并照此原则待人处事。当别人鼓吹他们的目标、权益和神圣的信条时，你却守口如瓶。当别人朝着某个方向冲去时，你为了维系和谐，心甘情愿地修改自己的目标，以求与别人保持一致（只要他们的基本价值与你相符）。当别人为他们钟爱的理论或要领大发宏论时，你却避开争论，宁可讨论有可能建立共识的实际问题。在你看来，我们都在一条船上，必须同舟共济。这是条好船，大可不必为了逞能而乱晃它。27、责任"}, "责任": {"no": 27, "short_desc": "责任心强的人言必有信。他们信奉的价值观是诚实、忠诚。", "desc": "你的责任主题促使你在心理上对你的诺言负全责。你一旦作出承诺，无论大小，你从感情上就觉得有义务将其完全落实。你的名声有赖于此。如果由于某种原因你不能兑现，你会自动寻找其他途径给对方以补偿。仅仅道歉是不够的。托辞和辩解是完全不可接受的。你不作出补偿，就会寝食不安。你的这种自觉性，这种几乎是走火入魔的行为准则，这种无可挑剔的道德标准，使你作为完全可以信赖的人而美名四扬。当分配新任务时，人们会首先想到你，因为他们知道你说到做到。他们很快就会向你求助-但你必须有所选择，从而避免因为乐善好施而力不从心。28、体谅,"}, "体谅": {"no": 28, "short_desc": "同理心－－善体人意的「心灵导师」，他们能够设身处地地体会他人的情感。", "desc": "你善解人意。你能体会到他人的感受，就象体会你自己一样。你能凭直觉通过他们的眼睛看世界，并分享他们的观点。你未必赞同每个人的看法。你未必怜悯每个人的困境-那是“同情”，而不是体谅。你未必赞成每个人的选择，但你的确理解他们，而这种理解的本能是威力无穷的。你能听到无声的提问。你能预料到需求。别人为寻找词汇而搜索枯肠，你却总能找到恰如其分的词汇和语调。你帮助别人寻找合适的语句向自己或他人表达情感。你帮助他们倾诉其情感生活。由于所有这些原因，其他人被你所吸引。29、完美，完美主义－－鉴赏力非凡的行家:"}, "完美": {"no": 29, "short_desc": "完美主题较强的人专注于激励个人和团体追求卓越。他们相信强中自有强中手。", "desc": "你的标准是优秀，而不是平均。把低于平均的业绩稍微提高到平均之上需要艰苦努力，且无法使你满足。而把本已不俗的业绩转变成出类拔萃，需要相同的努力，但远比前者激动人心。优势，无论属于你自己还是别人，都使你着迷。如同一名打捞珍珠的潜水员，你四处搜寻优势的蛛丝马迹-无师自通、一学就会、掌握技术浑然天成。所有这些都说明某种优势在起作用。发现优势后，你感到必须培育它，改进它，将它充分发挥，直到炉火纯青。你不停地摩擦珍珠，直到它银光四射。由于你对优势情有独钟，别人会认为你不能一视同仁。你更愿与善于欣赏你优势的人相处。同样，你喜欢结交发现并培养自身优势的人。你避开力图修理你，使你样样精通的人-他们也许能找到其它人来培养“全才”。你不想终生哀叹自己的欠缺；相反，你想发挥你的天生优势。这样更开心，更有效，并且，与常人所思相反，要求更高。30、统率"}, "统率": {"no": 30, "short_desc": "统率力强的人有大将风度。他们运筹帷幄，指挥若定。", "desc": "强烈的统率主题促使你实施指挥。与有的人不同，你对将自己的观点强加于人并无不适。相反，你一旦形成观点，就必须与人分享。你一旦确定目标，就要用它来统一众人的思想，否则就会坐立不安。你不怕对立；相反，你确信对立是解决难题的第一步。其它人可能对生活的不快讳莫如深，你则感到必须陈述事实或真理，无论它们多幺令人不快。你需要在人们之间扫除误会；因此，你要求他们明辨是非，开诚布公。你推动他们承担风险，甚至会为此而逼迫他们。虽然有人会对此表示厌恶，指责你刚愎自用，但他们又常常会自愿让你掌舵。人们往往拥戴那些立场鲜明的人，那些确定方向，然后率领他们前进的人。人们会拥戴你。你一呼百应。你发号施令。31、积极"}, "积极": {"no": 31, "short_desc": "积极的人浑身充满了富有感染力的热情。他们用快乐、向上来感召周围的人。", "desc": "你慷慨赞人，笑容可掬，不失时机地捕捉幽默。有人说你无忧无虑。还有人但愿能象你一样乐观豁达。无论怎样，人们喜欢与你相处。有你在，他们的世界就更加美好，因为你的热情是如此富有感染力。由于缺乏你的精力和乐观，有的人感到他们的世界重复而乏味，甚至压力重重。你似乎总能设法活跃他们的心灵。你为每个项目注入欢乐。你庆祝每一项成就。你千方百计使每一件事都生机勃勃，激动人心。你由于精力充沛，会受到某些玩世不恭者的排斥，但你的积极主题使你很少灰心泄气。你内心深处确信，活着无比美好；工作充满乐趣；无论遇到什幺挫折，都不应失去幽默感。32、伯乐，尊重个别差异－－因材施教的伯乐:"}, "伯乐": {"no": 32, "short_desc": "他们善于赏识并发掘他人的潜能。他们能够察觉任何细微的进步，并乐在其中。", "desc": "「尊重个别差异」的主导特质使你对个人特质极感兴趣，对于概括和典型感到不耐，因为不想忽略每个人与众不同之处。相反地，你注重个人之间的差异，自然而然会观察每个人的风格、动机、想法和如何建立人际关系。你可以从每个人身上听到独一无二的故事。这个主导特质说明了为什么你能替朋友挑选最合适的生日礼物，为什么你知道有人喜欢被公开赞扬，有人却敬而远之，以及为什么你能调整教学方式，配合有人想表现的愿望。因为你对其他人的能力观察入微，让每个人得到最好发挥。这种主导特质同时也有助于你组织有效率的团队。当旁人忙于寻找完美团队架构或方法时，你早已知道伟大团队的诀窍在于适才适所，才能发挥个人所长。33、取悦"}, "取悦": {"no": 33, "short_desc": "取悦主题较强的人喜欢结交新人并博取其欢心。能够在人际交往中打破坚冰、建立联系令他们倍感快慰。", "desc": "取悦的英文原意是把别人争取过来。你酷爱的挑战就是结识新人并赢得其好感。你从不怕见生人。相反，你见到生人精力倍增。你受他们的吸引。你想知道他们的姓名，问他们问题，寻找与他们的共同兴趣，以便攀谈，建立友情。有的人避免与人攀谈，因为他们担心话不投机。你则不然。你不仅从不辞穷，而且喜欢冒险与生人攀谈，因为打破坚冰，建立联系使你心满意足。而一旦关系建立，你就高高兴兴地把它搁置一边，继续前进。还有新人要结识，还有新的房间要进去，还有新的人群要交际。在你的生活中是没有生人的。只有尚未谋面的朋友。许多许多朋友。34、竞争"}, "竞争": {"no": 34, "short_desc": "竞争性强的人参照他人的表现来衡量自身的进步。他们力争第一，陶醉于竞争的喜悦中。", "desc": "竞争扎根于比较。当你环视四周时，你本能地意识到别人的业绩。他们的业绩就是你的最终标尺。无论你如何苦干，无论你的动机如何高尚，如果你仅仅达到自身目标，但未能傲视同侪，你就会感到现有成就空洞无物。如同所有的竞争者，你需要其它人。你需要比较。因为如果你能比较，你就能竞争，而如果你能竞争，你就能取胜。一旦取胜，你就能感受到无与伦比的快慰。你喜欢测量，因为它有助于比较。你喜欢其它竞争者，因为他们使你振奋。你热爱比赛，因为它们必定产生一个赢家。你尤其喜欢你胜券在握的比赛。虽然你对你的对手彬彬有礼，甚至能做到虽败尤荣，但你参加比赛绝不是为了取乐，而是为了取胜。你最终会避免参加取胜无望的比赛。"}};
+var STRENGTH_LIST = ["成就", "信仰", "自信", "行动", "专注", "追求", "适应", "纪律", "排难", "回顾", "公平", "审慎", "前瞻", "搜集", "战略", "分析", "思维", "统筹", "关联", "理念", "学习", "包容", "个别", "沟通", "交往", "和谐", "责任", "体谅", "完美", "统率", "积极", "伯乐", "取悦", "竞争"];
+
+var answers = new Array(180).fill(null);
+var currentQ = 0;
+var showingAll = false;
+
+var intro = document.getElementById('intro');
+var introCount = document.getElementById('introCount');
+var introBar = document.getElementById('introBar');
+var redScreen = document.getElementById('redScreen');
+var header = document.getElementById('header');
+var main = document.getElementById('main');
+var qSection = document.getElementById('qSection');
+var qNum = document.getElementById('qNum');
+var qTextA = document.getElementById('qTextA');
+var qTextB = document.getElementById('qTextB');
+var qL2 = document.getElementById('qL2');
+var qL1 = document.getElementById('qL1');
+var qN = document.getElementById('qN');
+var qR1 = document.getElementById('qR1');
+var qR2 = document.getElementById('qR2');
+var qSkipBtn = document.getElementById('qSkipBtn');
+var qBar = document.getElementById('qBar');
+var qProgress = document.getElementById('qProgress');
+var results = document.getElementById('results');
+
+// INTRO
+var count = 0;
+var targetCount = 180;
+var stepTotal = 45;
+var stepMs = 1500 / stepTotal;
+var inc = targetCount / stepTotal;
+
+function tick() {
+  count = Math.min(count + inc, targetCount);
+  introCount.textContent = String(Math.floor(count)).padStart(3,'0');
+  introBar.style.width = (count / targetCount * 100) + '%';
+  if (count < targetCount) setTimeout(tick, stepMs);
+  else {
+    introCount.textContent = '180';
+    introBar.style.width = '100%';
+    setTimeout(function() {
+      redScreen.classList.add('red-screen--on');
+      setTimeout(function() {
+        intro.classList.add('intro--done');
+        header.classList.add('header--on');
+        main.classList.add('main--on');
+        showQ(0);
+        setTimeout(function() { redScreen.style.transform = 'translateY(-100%)'; }, 100);
+      }, 700);
+    }, 400);
+  }
+}
+setTimeout(tick, 400);
+
+function showQ(i) {
+  if (i >= 180) { showResults(); return; }
+  currentQ = i;
+  var q = QUESTIONS[i];
+  qNum.textContent = String(i + 1).padStart(2,'0');
+  qTextA.textContent = q.a;
+  qTextB.textContent = q.b;
+  qProgress.textContent = i;
+  qBar.style.width = (i / 180 * 100) + '%';
+  qSection.style.display = 'flex';
+}
+
+function answer(choice) {
+  answers[currentQ] = choice;
+  currentQ++;
+  if (currentQ >= 180) { showResults(); return; }
+  qSection.style.opacity = '0';
+  qSection.style.transform = 'translateY(6px)';
+  qSection.style.transition = 'opacity .12s ease,transform .12s ease';
+  setTimeout(function() {
+    showQ(currentQ);
+    qSection.style.opacity = '1';
+    qSection.style.transform = 'translateY(0)';
+  }, 120);
+}
+
+function skip() {
+  answers[currentQ] = null;
+  currentQ++;
+  if (currentQ >= 180) showResults(); else showQ(currentQ);
+}
+
+// 5 scale buttons: L2=-2, L1=-1, N=0, R1=1, R2=2
+qL2.addEventListener('click', function() { answer('L2'); });
+qL1.addEventListener('click', function() { answer('L1'); });
+qN.addEventListener('click', function() { answer('N'); });
+qR1.addEventListener('click', function() { answer('R1'); });
+qR2.addEventListener('click', function() { answer('R2'); });
+qSkipBtn.addEventListener('click', skip);
+
+document.addEventListener('keydown', function(e) {
+  if (!main.classList.contains('main--on') || currentQ >= 180) return;
+  if (e.key === '1') { answer('L2'); e.preventDefault(); }
+  if (e.key === '2') { answer('L1'); e.preventDefault(); }
+  if (e.key === '3') { answer('N'); e.preventDefault(); }
+  if (e.key === '4') { answer('R1'); e.preventDefault(); }
+  if (e.key === '5') { answer('R2'); e.preventDefault(); }
+  if (e.key === 's' || e.key === 'S') { skip(); }
+});
+
+// SCORING & RESULTS
+function calcScores() {
+  var scores = {};
+  STRENGTH_LIST.forEach(function(s) { scores[s] = 0; });
+
+  for (var i = 0; i < 180; i++) {
+    var choice = answers[i];
+    if (!choice) continue;
+    var qScore = SCORING[i + 1];
+    if (!qScore) continue;
+
+    var aList = qScore['A'] || [];
+    var bList = qScore['B'] || [];
+
+    // 5-point scale → Excel scoring logic:
+    // L2 (非常像左): A-strengths +2
+    // L1 (有点像左): A-strengths +1
+    // N  (中立):     both +1
+    // R1 (有点像右): B-strengths +1
+    // R2 (非常像右): B-strengths +2
+    if (choice === 'L2') {
+      for (var j = 0; j < aList.length; j++) { var s = aList[j]; if (scores[s] !== undefined) scores[s] += 2; }
+    } else if (choice === 'L1') {
+      for (var j = 0; j < aList.length; j++) { var s = aList[j]; if (scores[s] !== undefined) scores[s] += 1; }
+    } else if (choice === 'N') {
+      for (var j = 0; j < aList.length; j++) { var s = aList[j]; if (scores[s] !== undefined) scores[s] += 1; }
+      for (var j = 0; j < bList.length; j++) { var s = bList[j]; if (scores[s] !== undefined) scores[s] += 1; }
+    } else if (choice === 'R1') {
+      for (var j = 0; j < bList.length; j++) { var s = bList[j]; if (scores[s] !== undefined) scores[s] += 1; }
+    } else if (choice === 'R2') {
+      for (var j = 0; j < bList.length; j++) { var s = bList[j]; if (scores[s] !== undefined) scores[s] += 2; }
+    }
+  }
+  return scores;
+}
+
+function showResults() {
+  qSection.style.display = 'none';
+  header.style.display = 'none';
+  results.classList.add('results--on');
+
+  var total = answers.filter(function(a) { return a !== null; }).length;
+  document.getElementById('resultsCount').textContent = total;
+
+  var scores = calcScores();
+  var ranked = [];
+  for (var name in scores) {
+    ranked.push({name:name, score:scores[name]});
+  }
+  ranked.sort(function(a,b) { return b.score - a.score; });
+
+  renderStrengthList(ranked.slice(0, 5));
+  window._ranked = ranked;
+}
+
+function renderStrengthList(items) {
+  var list = document.getElementById('strengthList');
+  var html = '';
+  for (var i = 0; i < items.length; i++) {
+    var item = items[i];
+    var sd = STRENGTH_DATA[item.name];
+    if (!sd) continue;
+    html += '<div class="strength-item">' +
+      '<div class="strength-rank">' +
+        '<span class="strength-rank__num">' + String(i+1).padStart(2,'0') + '</span>' +
+        '<span class="strength-rank__name">' + esc(item.name) + '</span>' +
+        '<span class="strength-rank__score num">' + item.score + ' 分</span>' +
+      '</div>' +
+      '<p class="strength-item__short">' + esc(sd.short_desc) + '</p>' +
+      '<div class="strength-item__full" id="full-' + i + '">' + esc(sd.desc) + '</div>' +
+      '<button class="strength-item__toggle" onclick="toggleDesc(' + i + ')">展开完整解读 +</button>' +
+      '</div>';
+  }
+  list.innerHTML = html;
+}
+
+function esc(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+window.toggleDesc = function(i) {
+  var el = document.getElementById('full-' + i);
+  var btn = el.nextElementSibling;
+  if (el.classList.contains('strength-item__full--open')) {
+    el.classList.remove('strength-item__full--open');
+    btn.textContent = '展开完整解读 +';
+  } else {
+    el.classList.add('strength-item__full--open');
+    btn.textContent = '收起 -';
+  }
+};
+
+// EXPORT
+document.getElementById('btnExport').addEventListener('click', function() {
+  var csv = '\uFEFFNo,Choice,A-Text,B-Text\n';
+  for (var i = 0; i < 180; i++) {
+    var labels = {'L2':'非常像左','L1':'有点像左','N':'中立','R1':'有点像右','R2':'非常像右'};
+    var c = labels[answers[i]] || '';
+    csv += (i+1) + ',' + c + ',"' + QUESTIONS[i].a.replace(/"/g,'""') + '","' + QUESTIONS[i].b.replace(/"/g,'""') + '"\n';
+  }
+  // Also add scores
+  csv += '\n\nStrength,Scores\n';
+  var ranked = window._ranked || [];
+  for (var j = 0; j < ranked.length; j++) {
+    csv += ranked[j].name + ',' + ranked[j].score + '\n';
+  }
+  var blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;a.download = 'gallup-results.csv';
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(url);
+});
+
+document.getElementById('btnRetake').addEventListener('click', function() {
+  answers = new Array(180).fill(null);
+  currentQ = 0;showingAll = false;
+  results.classList.remove('results--on');
+  header.style.display = 'flex';header.classList.add('header--on');
+  main.classList.add('main--on');
+  qSection.style.opacity = '1';qSection.style.transform = 'translateY(0)';
+  showQ(0);
+});
+
+document.getElementById('btnAll').addEventListener('click', function() {
+  var ranked = window._ranked || [];
+  showingAll = !showingAll;
+  if (showingAll) {
+    renderStrengthList(ranked);
+    this.textContent = '只看前5项';
+    window.scrollTo(0, 0);
+  } else {
+    renderStrengthList(ranked.slice(0, 5));
+    this.textContent = '查看全部 34 项排名';
+  }
+});
+
+})();
+</script>
+
+<script>
+// ======== ENHANCED MODULES JS ========
+(function() {
+
+var DOMAINS = {
+  "执行力": ["成就","统筹","信仰","公平","责任","排难","专注","纪律","审慎"],
+  "影响力": ["行动","统率","沟通","竞争","完美","自信","追求","取悦"],
+  "关系建立": ["适应","伯乐","关联","体谅","和谐","包容","个别","积极","交往"],
+  "战略思维": ["分析","回顾","前瞻","理念","搜集","思维","学习","战略"]
+};
+
+var AI_TEMPLATES = {
+  "战略+分析+学习": "你是一个典型的思考者。面对世界，你的第一反应是理解它的运作机制。战略让你看到全局规律，分析让你深挖因果，学习让你不断更新认知。在社交中你可能显得安静，但当别人需要洞见时，你是他们第一个想到的人。",
+  "沟通+交往+取悦": "你是天生的社交连接者。沟通让你能用语言点燃气氛，交往让你追求深度关系，取悦让你在陌生人中游刃有余。你在人群中如鱼得水，善于建立和维护人际网络。注意：深度关系比广度更重要。",
+  "成就+竞争+统率": "你是驱动型领导者。成就让你停不下来，竞争让你永远看向最高标准，统率让你敢于发号施令。你天生适合带领团队冲锋。但要注意：不是每个人都跟得上你的节奏。",
+  "体谅+和谐+包容": "你是关系的守护者。你能感知每个人的情绪波动，天生趋向化解矛盾，对所有人都敞开心扉。团队中你是粘合剂。提醒自己：照顾别人的同时也要照顾自己。",
+  "专注+纪律+责任": "你是可靠的执行者。专注让你心无旁骛，纪律让你井然有序，责任让你言出必行。你是团队最信任的基石。但偶尔也要抬头看看方向是否变了。",
+  "前瞻+理念+思维": "你是未来的建筑师。前瞻让你看见别人看不见的可能性，理念让你把碎片拼成宏伟蓝图，思维让你在独处中孕育创意。你适合做战略和产品方向。落地时需要找执行力强的搭档。",
+  "搜集+个别+伯乐": "你是人才的发现者。搜集让你不断获取信息，个别让你看见每个人的独特之处，伯乐让你乐于成就他人。你是一面镜子，让每个人看见自己最好的样子。",
+  "default": "你的才干组合独一无二。Top 5优势共同塑造了你独特的思维和行为模式。建议深入了解每个才干的内涵，思考它们如何在你日常工作和关系中协同作用。"
+};
+
+function loadChartJS(cb) {
+  if (window.Chart) { cb(); return; }
+  var s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js';
+  s.onload = cb; document.head.appendChild(s);
+}
+
+window.showEnhancedSections = function(ranked) {
+  ['radarSection','domainSection','rankingSection','aiSection','chatSection','shareSection'].forEach(function(id) {
+    document.getElementById(id).style.display = 'block';
+  });
+  loadChartJS(function() { buildRadar(ranked.slice(0,10)); });
+  buildDomains(ranked);
+  buildRankingTable(ranked);
+  buildAIInterpretation(ranked.slice(0,5));
+  buildShareCard(ranked.slice(0,5));
+  initChatAnalysis(ranked);
+};
+
+function buildRadar(top10) {
+  var ctx = document.getElementById('radarChart').getContext('2d');
+  var labels = top10.map(function(i) { return i.name; });
+  var data = top10.map(function(i) { return i.score; });
+  new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: '得分',
+        data: data,
+        backgroundColor: 'rgba(227,43,22,0.12)',
+        borderColor: '#E32B16',
+        borderWidth: 2,
+        pointBackgroundColor: '#E32B16',
+        pointBorderColor: '#000',
+        pointRadius: 4,
+        pointHoverRadius: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        r: {
+          min: 0,
+          ticks: { color: '#8A8A8A', backdropColor: 'transparent', font: { size: 10 } },
+          pointLabels: { color: '#FFFFFF', font: { size: 11 } },
+          grid: { color: 'rgba(255,255,255,0.08)' },
+          angleLines: { color: 'rgba(255,255,255,0.08)' }
+        }
+      }
+    }
+  });
+}
+
+function buildDomains(ranked) {
+  var scores = {}; ranked.forEach(function(r) { scores[r.name] = r.score; });
+  var html = '';
+  Object.keys(DOMAINS).forEach(function(name) {
+    var list = DOMAINS[name];
+    var total = 0; list.forEach(function(s) { total += scores[s] || 0; });
+    html += '<div class="domain-card"><div class="domain-card__name">'+name+'</div>'+
+      '<div class="domain-card__bar"><div class="domain-card__bar-fill" style="width:'+Math.min(total/4,100)+'%"></div></div>'+
+      '<div class="domain-card__score">'+total+' 分</div></div>';
+  });
+  document.getElementById('domainDist').innerHTML = html;
+}
+
+function buildRankingTable(ranked) {
+  var maxS = ranked[0].score;
+  var html = '';
+  ranked.forEach(function(r, i) {
+    html += '<tr><td class="rank-num">'+(i+1)+'</td><td class="rank-name">'+r.name+'</td>'+
+      '<td class="rank-score">'+r.score+'</td>'+
+      '<td class="rank-bar-wrap"><div class="rank-bar" style="width:'+(r.score/maxS*100)+'%"></div></td></tr>';
+  });
+  document.getElementById('rankingBody').innerHTML = html;
+}
+
+function buildAIInterpretation(top5) {
+  var names = top5.map(function(r) { return r.name; }).sort();
+  var key = names.slice(0,3).join('+');
+  var text = AI_TEMPLATES[key] || AI_TEMPLATES['default'];
+  
+  var tagsStr = top5.map(function(r) {
+    return '<span class="ai-section__tag">#'+r.name+'</span>';
+  }).join('');
+
+  var domainScores = {};
+  Object.keys(DOMAINS).forEach(function(d) {
+    DOMAINS[d].forEach(function(s) {
+      top5.forEach(function(r) { if (r.name === s) domainScores[d] = (domainScores[d]||0)+1; });
+    });
+  });
+
+  var strongest = Object.keys(domainScores).sort(function(a,b) { return domainScores[b]-domainScores[a]; })[0];
+
+  var html = '<p>'+text+'</p><p>你的Top 5集中在 <strong>'+strongest+'</strong> 领域。'+
+    '这意味着你在该维度有天然的行为偏好和认知模式。</p><p>'+tagsStr+'</p>'+
+    '<p style="margin-top:16px;font-size:12px;color:var(--g);">'+
+    '提示：此为本地预设解读模板。如需更深入的个人化分析，可将测试结果与微信聊天记录进行交叉分析，或通过 Marvis Skill 进行对话式深度探索。</p>';
+  document.getElementById('aiContent').innerHTML = html;
+}
+
+function buildShareCard(top5) {
+  var html = '';
+  top5.forEach(function(r, i) {
+    html += '<div class="share-card__item"><span class="share-card__item-num">'+(i+1)+'</span>'+
+      '<span class="share-card__item-name">'+r.name+'</span>'+
+      '<span class="share-card__item-score">'+r.score+'分</span></div>';
+  });
+  document.getElementById('shareList').innerHTML = html + '<div style="margin-top:16px;height:40px;background:rgba(227,43,22,0.08);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--g);">雷达图 · gallup-strengths.pages.dev</div>';
+
+  document.getElementById('btnShareCard').addEventListener('click', function() {
+    document.getElementById('sharePreview').style.display = 'block';
+    setTimeout(function() { document.getElementById('sharePreview').scrollIntoView({behavior:'smooth'}); }, 100);
+  });
+
+  document.getElementById('btnCopyLink').addEventListener('click', function() {
+    var names = top5.map(function(r) { return r.name; }).join(',');
+    var scores = top5.map(function(r) { return r.score; }).join(',');
+    var link = window.location.origin + window.location.pathname + '?results=' + encodeURIComponent(names + '|' + scores);
+    navigator.clipboard.writeText(link).then(function() {
+      var btn = document.getElementById('btnCopyLink');
+      var orig = btn.textContent;
+      btn.textContent = '已复制!';
+      btn.style.borderColor = '#E32B16';
+      btn.style.color = '#E32B16';
+      setTimeout(function() { btn.textContent = orig; btn.style.borderColor = ''; btn.style.color = ''; }, 1500);
+    });
+  });
+}
+
+function initChatAnalysis(ranked) {
+  var scores = {}; ranked.forEach(function(r) { scores[r.name] = r.score; });
+  var dropZone = document.getElementById('chatDropZone');
+  var fileInput = document.getElementById('chatFileInput');
+  var resultDiv = document.getElementById('chatResult');
+
+  dropZone.addEventListener('dragover', function(e) { e.preventDefault(); dropZone.classList.add('drag-over'); });
+  dropZone.addEventListener('dragleave', function() { dropZone.classList.remove('drag-over'); });
+  dropZone.addEventListener('drop', function(e) { e.preventDefault(); dropZone.classList.remove('drag-over'); handleFile(e.dataTransfer.files[0]); });
+  fileInput.addEventListener('change', function(e) { handleFile(e.target.files[0]); });
+
+  function handleFile(file) {
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var content = e.target.result;
+      analyzeChat(content, scores, ranked, resultDiv);
+    };
+    reader.readAsText(file);
+  }
+}
+
+function analyzeChat(text, scores, ranked, resultDiv) {
+  var patterns = [
+    { name: '沟通', keywords: ['我觉得','我认为','分享','告诉','说', '讲', '写', '表达'] },
+    { name: '体谅', keywords: ['理解','感受','没事','抱抱','心疼','辛苦','不容易','安慰'] },
+    { name: '交往', keywords: ['朋友','我们','一起','聚会','见面','想你','约','出来'] },
+    { name: '统率', keywords: ['应该','必须','决定','安排','负责','带领','组织'] },
+    { name: '分析', keywords: ['因为','所以','数据','分析','逻辑','原因','为什么','证据'] },
+    { name: '学习', keywords: ['学习','看看','了解','研究','查','学','探索','发现'] },
+    { name: '包容', keywords: ['都行','随便','都可以','没关系','没事','欢迎'] },
+    { name: '成就', keywords: ['完成','搞定','做了','成功','目标','进度','做完'] },
+    { name: '竞争', keywords: ['第一','最好','赢','比','排名','超越'] },
+    { name: '和谐', keywords: ['别吵','冷静','算了','OK','好的','同意'] },
+    { name: '积极', keywords: ['哈哈','开心','太棒','厉害','赞','牛','优秀','nice','哈哈哈','嘿嘿'] },
+    { name: '审慎', keywords: ['但是','不过','担心','万一','风险','小心','谨慎'] },
+    { name: '责任', keywords: ['保证','一定','承诺','负责','到位'] },
+    { name: '前瞻', keywords: ['未来','计划','以后','打算','目标','愿景','方向'] },
+    { name: '个别', keywords: ['你特别','你的特点','擅长','优势','潜力'] }
+  ];
+
+  var wordCount = text.length;
+  var msgCount = (text.match(/20\d{2}[-\/]\d{1,2}[-\/]\d{1,2}/g) || []).length || (text.split('\\n').length / 3);
+  
+  var matches = {};
+  patterns.forEach(function(p) {
+    var count = 0;
+    p.keywords.forEach(function(kw) {
+      var re = new RegExp(kw, 'g');
+      var m = text.match(re);
+      if (m) count += m.length;
+    });
+    matches[p.name] = Math.min(Math.round(count / Math.max(wordCount / 500, 1) * 100), 95);
+  });
+
+  var sorted = Object.keys(matches).sort(function(a,b) { return matches[b]-matches[a]; }).slice(0, 8);
+
+  var html = '<p style="margin-bottom:12px;font-weight:700;font-size:14px;">聊天行为特征与才干匹配度</p>'+
+    '<p style="font-size:12px;color:var(--g);margin-bottom:20px;">已处理约 ' + Math.round(wordCount/100)/10 + 'k 字符 · 关键词映射法 · 仅作参考</p>';
+
+  sorted.forEach(function(name) {
+    var pct = matches[name];
+    var isTop = ranked.slice(0,5).some(function(r) { return r.name === name; });
+    html += '<div class="chat-match-item">' +
+      '<span class="chat-match-item__name">' + name + (isTop ? ' <span style="color:var(--r);font-size:10px;">★</span>' : '') + '</span>' +
+      '<span style="display:flex;align-items:center;gap:8px;min-width:160px;">' +
+        '<div style="flex:1;height:3px;background:rgba(255,255,255,0.06);border-radius:2px;"><div class="chat-match-bar" style="width:'+pct+'%"></div></div>' +
+        '<span class="chat-match-item__pct">'+pct+'%</span>' +
+      '</span></div>';
+  });
+
+  var overlap = sorted.filter(function(name) {
+    return ranked.slice(0,5).some(function(r) { return r.name === name; });
+  }).length;
+
+  html += '<p style="margin-top:16px;font-size:13px;color:var(--g);">交叉验证：聊天行为与Top 5才干有 <strong style="color:var(--w);">'+overlap+'/5</strong> 项重合。' +
+    (overlap >= 3 ? '你的日常社交行为与你自我认知的优势高度一致。' : 
+     overlap >= 1 ? '部分一致。可能在社交场景中你的优势表达方式有所不同。' : 
+     '重合度较低。可能你的优势在非社交场景（如独处工作）中更明显。') + '</p>';
+
+  resultDiv.innerHTML = html;
+  resultDiv.classList.add('chat-analysis-result--on');
+}
+
+function initSortableTable(ranked) {
+  var sortCol = 'rank';
+  var sortAsc = true;
+  document.getElementById('rankingTable').querySelectorAll('th').forEach(function(th) {
+    th.addEventListener('click', function() {
+      var col = this.getAttribute('data-sort');
+      if (col === sortCol) { sortAsc = !sortAsc; } else { sortCol = col; sortAsc = true; }
+      var sorted = ranked.slice().sort(function(a,b) {
+        var va = col==='rank' ? ranked.indexOf(a)+1 : (col==='name'?a.name:a.score);
+        var vb = col==='rank' ? ranked.indexOf(b)+1 : (col==='name'?b.name:b.score);
+        if (typeof va === 'string') return sortAsc ? va.localeCompare(vb,'zh') : vb.localeCompare(va,'zh');
+        return sortAsc ? va-vb : vb-va;
+      });
+      buildRankingTable(sorted);
+    });
+  });
+}
+
+})();
+</script>
+</body>
+</html>
