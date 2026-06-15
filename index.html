@@ -69,6 +69,48 @@ a{color:inherit;text-decoration:none;}
 }
 .red-screen--on{transform:scaleY(1);}
 
+.site-nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 190;
+  background: rgba(0,0,0,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  padding: 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.site-nav__tab {
+  background: none;
+  border: none;
+  color: var(--g);
+  font-family: inherit;
+  font-size: 14px;
+  padding: 14px 28px;
+  cursor: pointer;
+  position: relative;
+  letter-spacing: .04em;
+  transition: color .25s;
+}
+.site-nav__tab:hover { color: var(--w); }
+.site-nav__tab--active { color: var(--w); }
+.site-nav__tab--active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 2px;
+  background: var(--r);
+  border-radius: 1px;
+}
+@media (max-width: 600px) {
+  .site-nav__tab { padding: 12px 20px; font-size: 13px; }
+}
+
 .main{display:none;}
 .main--on{display:block;}
 
@@ -400,6 +442,11 @@ a{color:inherit;text-decoration:none;}
 
 <div class="red-screen" id="redScreen"></div>
 
+<nav class="site-nav" id="siteNav">
+  <button class="site-nav__tab site-nav__tab--active" id="navTabTest">开始测试</button>
+  <button class="site-nav__tab" id="navTabChat">聊天分析</button>
+</nav>
+
 <div class="intro" id="intro">
   <p class="intro__tag label">GALLUP — STRENGTHSFINDER</p>
   <h1 class="intro__word">盖洛普<br>优势识别器</h1>
@@ -492,7 +539,7 @@ a{color:inherit;text-decoration:none;}
   </div>
 </section>
 
-<section class="enhanced-section" id="chatSection" style="display:none;">
+<section class="enhanced-section" id="chatSection">
   <h3>聊天记录交叉分析</h3>
   <p style="color:var(--g);font-size:13px;margin-bottom:20px;">上传你的聊天记录（txt/csv），本地分析社交行为与才干特质的对应关系。所有数据在浏览器内处理，不上传服务器。</p>
   <div class="chat-section" id="chatDropZone">
@@ -500,6 +547,10 @@ a{color:inherit;text-decoration:none;}
     <p class="chat-section__text">拖拽聊天记录文件到此处，或点击选择</p>
     <input type="file" class="chat-section__file-input" id="chatFileInput" accept=".txt,.csv">
     <button class="btn" onclick="document.getElementById('chatFileInput').click()">选择文件</button>
+  </div>
+  <div style="margin-top:20px;text-align:center;">
+    <button class="btn btn--red" id="btnConnectWechat" onclick="connectWechatDB()">连接微信数据库</button>
+    <span id="apiStatus" style="display:none;color:var(--g);font-size:12px;margin-left:12px;"></span>
   </div>
   <div class="chat-analysis-result" id="chatResult"></div>
 </section>
@@ -809,7 +860,7 @@ function loadChartJS(cb) {
 }
 
 window.showEnhancedSections = function(ranked) {
-  ['radarSection','domainSection','rankingSection','aiSection','chatSection','shareSection'].forEach(function(id) {
+  ['radarSection','domainSection','rankingSection','aiSection','shareSection'].forEach(function(id) {
     document.getElementById(id).style.display = 'block';
   });
   loadChartJS(function() { buildRadar(ranked.slice(0,10)); });
@@ -817,7 +868,6 @@ window.showEnhancedSections = function(ranked) {
   buildRankingTable(ranked);
   buildAIInterpretation(ranked.slice(0,5));
   buildShareCard(ranked.slice(0,5));
-  initChatAnalysis(ranked);
 };
 
 function buildRadar(top10) {
@@ -1037,7 +1087,126 @@ function initSortableTable(ranked) {
   });
 }
 
+window.analyzeChat = analyzeChat;
+
 })();
+</script>
+<script>
+(function() {
+  var navTest = document.getElementById('navTabTest');
+  var navChat = document.getElementById('navTabChat');
+
+  navTest.addEventListener('click', function() {
+    navTest.classList.add('site-nav__tab--active');
+    navChat.classList.remove('site-nav__tab--active');
+    var intro = document.getElementById('intro');
+    if (intro.classList.contains('intro--done')) {
+      document.getElementById('results').scrollIntoView({behavior:'smooth'});
+    } else {
+      intro.scrollIntoView({behavior:'smooth'});
+    }
+  });
+
+  navChat.addEventListener('click', function() {
+    navChat.classList.add('site-nav__tab--active');
+    navTest.classList.remove('site-nav__tab--active');
+    document.getElementById('chatSection').scrollIntoView({behavior:'smooth'});
+  });
+
+  var dropZone = document.getElementById('chatDropZone');
+  var fileInput = document.getElementById('chatFileInput');
+  var resultDiv = document.getElementById('chatResult');
+
+  dropZone.addEventListener('dragover', function(e) { e.preventDefault(); dropZone.classList.add('drag-over'); });
+  dropZone.addEventListener('dragleave', function() { dropZone.classList.remove('drag-over'); });
+  dropZone.addEventListener('drop', function(e) {
+    e.preventDefault();
+    dropZone.classList.remove('drag-over');
+    handleChatFile(e.dataTransfer.files[0]);
+  });
+  fileInput.addEventListener('change', function(e) {
+    handleChatFile(e.target.files[0]);
+  });
+
+  function handleChatFile(file) {
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var ranked = window._ranked || [];
+      var scores = {};
+      ranked.forEach(function(r) { scores[r.name] = r.score; });
+      window.analyzeChat(e.target.result, scores, ranked, resultDiv);
+    };
+    reader.readAsText(file);
+  }
+})();
+
+function connectWechatDB() {
+  var statusEl = document.getElementById('apiStatus');
+  var btn = document.getElementById('btnConnectWechat');
+  var resultDiv = document.getElementById('chatResult');
+
+  statusEl.style.display = 'inline';
+  statusEl.textContent = '正在连接...';
+  statusEl.style.color = 'var(--g)';
+  btn.disabled = true;
+
+  var dbPath = 'D:\\新建文件夹\\xwechat_files\\wxid_qkslns979kft22_e651\\db_storage';
+  var url = 'http://localhost:8765/analyze?db_path=' + encodeURIComponent(dbPath);
+
+  fetch(url)
+    .then(function(response) {
+      if (!response.ok) throw new Error('API not available');
+      return response.json();
+    })
+    .then(function(data) {
+      statusEl.textContent = '分析完成';
+      statusEl.style.color = 'var(--w)';
+      btn.disabled = false;
+      renderWechatAnalysis(data, resultDiv);
+    })
+    .catch(function(err) {
+      statusEl.textContent = '请先启动本地桥接服务';
+      statusEl.style.color = 'var(--r)';
+      btn.disabled = false;
+    });
+}
+
+function renderWechatAnalysis(data, resultDiv) {
+  var html = '<p style="margin-bottom:12px;font-weight:700;font-size:14px;">微信聊天数据分析结果</p>';
+  
+  if (data.chat_stats) {
+    html += '<p style="font-size:12px;color:var(--g);margin-bottom:16px;">' +
+      '消息总数：' + (data.chat_stats.total_messages || 'N/A') + ' · ' +
+      '联系人：' + (data.chat_stats.contacts || 'N/A') + ' · ' +
+      '时间跨度：' + (data.chat_stats.date_range || 'N/A') +
+      '</p>';
+  }
+
+  if (data.traits && data.traits.length) {
+    html += '<p style="font-weight:700;font-size:13px;margin-bottom:8px;">行为特征匹配：</p>';
+    data.traits.forEach(function(t) {
+      html += '<div class="chat-match-item">' +
+        '<span class="chat-match-item__name">' + (t.name || '') + '</span>' +
+        '<span style="display:flex;align-items:center;gap:8px;min-width:160px;">' +
+          '<div style="flex:1;height:3px;background:rgba(255,255,255,0.06);border-radius:2px;">' +
+            '<div class="chat-match-bar" style="width:' + (t.score || 0) + '%"></div></div>' +
+          '<span class="chat-match-item__pct">' + (t.score || 0) + '%</span>' +
+        '</span></div>';
+    });
+  }
+
+  if (data.summary) {
+    html += '<p style="margin-top:16px;font-size:13px;line-height:1.8;">' + data.summary + '</p>';
+  }
+
+  if (data.error) {
+    html += '<p style="color:var(--r);margin-top:12px;">错误：' + data.error + '</p>';
+  }
+
+  resultDiv.innerHTML = html;
+  resultDiv.classList.add('chat-analysis-result--on');
+}
 </script>
 </body>
 </html>
