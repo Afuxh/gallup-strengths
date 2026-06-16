@@ -436,6 +436,160 @@ a{color:inherit;text-decoration:none;}
   .enhanced-section { padding: 40px var(--pad) 60px; }
 }
 
+
+/* ======== LANDING CARDS ======== */
+.landing {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 100px var(--pad) 80px;
+  transition: opacity .4s, transform .4s var(--ease);
+}
+.landing--done {
+  opacity: 0;
+  transform: translateY(-20px);
+  pointer-events: none;
+}
+.landing-inner {
+  width: 100%;
+  max-width: 960px;
+  text-align: center;
+}
+.landing__tag { color: var(--g); margin-bottom: 12px; }
+.landing__title {
+  font-weight: 900;
+  font-size: clamp(32px, 5vw, 52px);
+  letter-spacing: -.04em;
+  line-height: 1.1;
+  margin-bottom: 8px;
+}
+.landing__sub { color: var(--g); font-size: 14px; margin-bottom: 56px; }
+.landing-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+@media (max-width: 700px) {
+  .landing-cards { grid-template-columns: 1fr; max-width: 380px; margin: 0 auto; }
+}
+.landing-card {
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 10px;
+  padding: 32px 24px;
+  cursor: pointer;
+  transition: all .3s var(--ease);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.landing-card:hover {
+  border-color: var(--r);
+  background: rgba(227,43,22,.06);
+  transform: translateY(-4px);
+}
+.landing-card__icon { font-size: 40px; margin-bottom: 16px; opacity: .85; }
+.landing-card__title {
+  font-weight: 900;
+  font-size: 18px;
+  letter-spacing: -.02em;
+  margin-bottom: 8px;
+}
+.landing-card__desc {
+  color: var(--g);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.landing-card__badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: var(--r);
+  color: var(--w);
+  font-size: 9px;
+  letter-spacing: .1em;
+  padding: 2px 8px;
+  border-radius: 3px;
+  display: none;
+}
+.landing-card__badge--on { display: block; }
+
+/* ======== COMPREHENSIVE SECTION ======== */
+.comprehensive-section {
+  padding: 60px var(--pad) 80px;
+  max-width: 960px;
+  margin: 0 auto;
+  display: none;
+}
+.comprehensive-section--on { display: block; }
+.comprehensive-section h3 {
+  font-weight: 900;
+  font-size: clamp(24px, 4vw, 36px);
+  letter-spacing: -.02em;
+  margin-bottom: 32px;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+  padding-bottom: 16px;
+}
+.cross-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 36px;
+  font-size: 14px;
+}
+.cross-table th {
+  text-align: left;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,.15);
+  color: var(--g);
+  font-weight: 400;
+  letter-spacing: .08em;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+.cross-table td {
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(255,255,255,.05);
+}
+.cross-verdict {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .06em;
+}
+.cross-verdict--consistent {
+  background: rgba(76,175,80,.15);
+  color: #4CAF50;
+}
+.cross-verdict--divergent {
+  background: rgba(255,152,0,.15);
+  color: #FF9800;
+}
+.cross-verdict--compensatory {
+  background: rgba(33,150,243,.15);
+  color: #2196F3;
+}
+.comprehensive-summary {
+  background: rgba(227,43,22,.06);
+  border: 1px solid rgba(227,43,22,.2);
+  border-radius: 8px;
+  padding: 28px;
+  font-size: 14px;
+  line-height: 1.85;
+}
+.comprehensive-summary__label {
+  font-weight: 900;
+  font-size: 16px;
+  margin-bottom: 16px;
+}
+@media (max-width: 600px) {
+  .cross-table { font-size: 12px; }
+  .cross-table td, .cross-table th { padding: 8px 10px; }
+  .comprehensive-section { padding: 40px var(--pad) 60px; }
+}
+
 </style>
 </head>
 <body>
@@ -443,16 +597,37 @@ a{color:inherit;text-decoration:none;}
 <div class="red-screen" id="redScreen"></div>
 
 <nav class="site-nav" id="siteNav">
-  <button class="site-nav__tab site-nav__tab--active" id="navTabTest">开始测试</button>
+  <button class="site-nav__tab site-nav__tab--active" id="navTabHome">首页</button>
+  <button class="site-nav__tab" id="navTabTest">测试</button>
   <button class="site-nav__tab" id="navTabChat">聊天分析</button>
+  <button class="site-nav__tab" id="navTabComprehensive" style="display:none;">综合分析</button>
 </nav>
 
-<div class="intro" id="intro">
-  <p class="intro__tag label">GALLUP — STRENGTHSFINDER</p>
-  <h1 class="intro__word">盖洛普<br>优势识别器</h1>
-  <p class="intro__sub">180 题 · 34 项才干主题 · 发现你的天赋</p>
-  <div class="intro__bar"><div class="intro__bar-fill" id="introBar"></div></div>
-  <p class="intro__count num" id="introCount">000</p>
+<div class="landing" id="landing">
+  <div class="landing-inner">
+    <p class="landing__tag label">GALLUP — STRENGTHSFINDER</p>
+    <h1 class="landing__title">盖洛普优势识别器</h1>
+    <p class="landing__sub">180 题 · 34 项才干主题 · 15维度社交分析 · 综合交叉验证</p>
+    <div class="landing-cards">
+      <div class="landing-card" id="cardTest" onclick="startTest()">
+        <div class="landing-card__icon">&#x1F4DD;</div>
+        <div class="landing-card__title">盖洛普测试</div>
+        <div class="landing-card__desc">180题在线测试，34项才干主题完整解读，雷达图可视化</div>
+        <div class="landing-card__badge" id="badgeTest">已完成</div>
+      </div>
+      <div class="landing-card" id="cardUpload" onclick="scrollToChat()">
+        <div class="landing-card__icon">&#x1F4C2;</div>
+        <div class="landing-card__title">上传聊天记录</div>
+        <div class="landing-card__desc">拖拽/选择TXT或CSV文件，纯前端本地分析15维度，秒出结果</div>
+      </div>
+      <div class="landing-card" id="cardWechat" onclick="connectWechatDB()">
+        <div class="landing-card__icon">&#x1F4AC;</div>
+        <div class="landing-card__title">连接微信</div>
+        <div class="landing-card__desc">一键读取本地微信2026IP训练营聊天，桥接服务自动分析</div>
+        <div class="landing-card__badge" id="badgeWechat">已完成</div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <header class="header fx-blend" id="header">
@@ -576,6 +751,24 @@ a{color:inherit;text-decoration:none;}
   </div>
 </section>
 
+<section class="enhanced-section comprehensive-section" id="comprehensiveSection">
+  <h3>综合分析</h3>
+  <p style="color:var(--g);font-size:13px;margin-bottom:24px;" id="compStatus">等待测试和聊天分析均完成后自动生成...</p>
+  <table class="cross-table" id="crossTable" style="display:none;">
+    <thead><tr>
+      <th>Top 5 才干</th>
+      <th>社交维度</th>
+      <th>匹配度</th>
+      <th>判定</th>
+    </tr></thead>
+    <tbody id="crossBody"></tbody>
+  </table>
+  <div class="comprehensive-summary" id="compSummary" style="display:none;">
+    <div class="comprehensive-summary__label">综合人格画像</div>
+    <div id="compSummaryText"></div>
+  </div>
+</section>
+
 <footer class="site-footer">
   <p>盖洛普优势识别器 &copy; 2026 &nbsp;|&nbsp; 基于 Gallup StrengthsFinder 34 项才干主题 &nbsp;|&nbsp; <a href="https://github.com">GitHub</a></p>
 </footer>
@@ -611,34 +804,7 @@ var qBar = document.getElementById('qBar');
 var qProgress = document.getElementById('qProgress');
 var results = document.getElementById('results');
 
-// INTRO
-var count = 0;
-var targetCount = 180;
-var stepTotal = 45;
-var stepMs = 1500 / stepTotal;
-var inc = targetCount / stepTotal;
-
-function tick() {
-  count = Math.min(count + inc, targetCount);
-  introCount.textContent = String(Math.floor(count)).padStart(3,'0');
-  introBar.style.width = (count / targetCount * 100) + '%';
-  if (count < targetCount) setTimeout(tick, stepMs);
-  else {
-    introCount.textContent = '180';
-    introBar.style.width = '100%';
-    setTimeout(function() {
-      redScreen.classList.add('red-screen--on');
-      setTimeout(function() {
-        intro.classList.add('intro--done');
-        header.classList.add('header--on');
-        main.classList.add('main--on');
-        showQ(0);
-        setTimeout(function() { redScreen.style.transform = 'translateY(-100%)'; }, 100);
-      }, 700);
-    }, 400);
-  }
-}
-setTimeout(tick, 400);
+// INTRO animation disabled - replaced by landing page cards
 
 function showQ(i) {
   if (i >= 180) { showResults(); return; }
@@ -743,6 +909,13 @@ function showResults() {
 
   renderStrengthList(ranked.slice(0, 5));
   window._ranked = ranked;
+
+  window.showEnhancedSections(ranked);
+
+  state.testDone = true;
+  state.testData = ranked;
+  document.getElementById('badgeTest').classList.add('landing-card__badge--on');
+  checkComprehensive();
 }
 
 function renderStrengthList(items) {
@@ -1092,25 +1265,131 @@ window.analyzeChat = analyzeChat;
 })();
 </script>
 <script>
+var state = { testDone: false, chatDone: false, testData: null, chatData: null };
+
+function checkComprehensive() {
+  if (state.testDone && state.chatDone) {
+    document.getElementById('navTabComprehensive').style.display = '';
+    document.getElementById('comprehensiveSection').classList.add('comprehensive-section--on');
+    document.getElementById('compStatus').textContent = '测试和聊天分析均已完成，正在生成交叉对比...';
+    renderComprehensive();
+    document.getElementById('comprehensiveSection').scrollIntoView({behavior:'smooth'});
+  }
+}
+
+function renderComprehensive() {
+  var testTop5 = state.testData.slice(0, 5);
+  var chatDims = state.chatData.dimensions || [];
+  var chatMap = {};
+  chatDims.forEach(function(d) { chatMap[d.dimension] = d.percentage; });
+
+  var rows = [];
+  testTop5.forEach(function(t) {
+    var pct = chatMap[t.name] || 0;
+    var verdict, cls;
+    if (pct >= 15) {
+      verdict = '一致';
+      cls = 'cross-verdict--consistent';
+    } else if (pct >= 5) {
+      verdict = '部分一致';
+      cls = 'cross-verdict--divergent';
+    } else {
+      verdict = '社交补偿';
+      cls = 'cross-verdict--compensatory';
+    }
+    rows.push({talent: t.name, chatDim: t.name, score: Math.round(pct), verdict: verdict, cls: cls});
+  });
+
+  var tbody = document.getElementById('crossBody');
+  var html = '';
+  rows.forEach(function(r) {
+    html += '<tr><td style="font-weight:700;">' + r.talent + '</td>' +
+      '<td>' + r.chatDim + '</td>' +
+      '<td><span style="display:inline-block;width:80px;height:4px;background:rgba(255,255,255,0.06);border-radius:2px;vertical-align:middle;margin-right:8px;"><span style="display:block;height:100%;background:var(--r);border-radius:2px;width:' + Math.min(r.score, 100) + '%"></span></span>' + r.score + '%</td>' +
+      '<td><span class="cross-verdict ' + r.cls + '">' + r.verdict + '</span></td></tr>';
+  });
+  tbody.innerHTML = html;
+  document.getElementById('crossTable').style.display = '';
+
+  var consistent = rows.filter(function(r) { return r.verdict === '一致'; }).map(function(r) { return r.talent; });
+  var divergent = rows.filter(function(r) { return r.verdict !== '一致'; });
+
+  var summary = '基于盖洛普测试与社交行为数据的交叉分析，你的综合人格画像如下：';
+
+  if (consistent.length > 0) {
+    summary += '才干「' + consistent.join('」「') + '」在测试和社交行为中高度一致，说明这些特质是你稳定且内外统一的核心优势，无论在独处思考还是人际互动中都会自然流露。';
+  }
+  if (divergent.length > 0) {
+    divergent.forEach(function(d) {
+      if (d.verdict === '部分一致') {
+        summary += '「' + d.talent + '」在测试中得分较高但在社交中表达有限，可能该才干更多在非社交场景（如独立工作、深度思考）中发挥作用。';
+      } else {
+        summary += '「' + d.talent + '」在社交行为中表现偏低，但你通过其他维度的社交表达（如沟通、包容、积极等）进行了补偿，形成了独特的社交风格。';
+      }
+    });
+  }
+  summary += '整体来看，你的才干组合在社交场景中呈现出一种独特的动态平衡——既有稳定一致的核心特质作为锚点，也有灵活补偿的机制帮助你适应多变的社交环境。这种组合表明你是一个既有坚定内核、又能灵活适应外部环境的人。';
+
+  document.getElementById('compSummaryText').textContent = summary;
+  document.getElementById('compSummary').style.display = '';
+  document.getElementById('compStatus').textContent = '交叉分析完成';
+
+  document.querySelectorAll('.site-nav__tab').forEach(function(t) { t.classList.remove('site-nav__tab--active'); });
+  document.getElementById('navTabComprehensive').classList.add('site-nav__tab--active');
+}
+
+function startTest() {
+  document.getElementById('landing').classList.add('landing--done');
+  setTimeout(function() {
+    document.getElementById('landing').style.display = 'none';
+    document.getElementById('redScreen').classList.add('red-screen--on');
+    setTimeout(function() {
+      document.getElementById('header').classList.add('header--on');
+      document.getElementById('main').classList.add('main--on');
+      showQ(0);
+      setTimeout(function() { document.getElementById('redScreen').style.transform = 'translateY(-100%)'; }, 100);
+    }, 700);
+  }, 400);
+}
+
+function scrollToChat() {
+  document.getElementById('chatSection').scrollIntoView({behavior:'smooth'});
+}
+</script>
+<script>
 (function() {
+  var navHome = document.getElementById('navTabHome');
   var navTest = document.getElementById('navTabTest');
   var navChat = document.getElementById('navTabChat');
+  var navComp = document.getElementById('navTabComprehensive');
+
+  function setActive(tab) {
+    [navHome, navTest, navChat, navComp].forEach(function(t) { t.classList.remove('site-nav__tab--active'); });
+    tab.classList.add('site-nav__tab--active');
+  }
+
+  navHome.addEventListener('click', function() {
+    setActive(navHome);
+    document.getElementById('landing').scrollIntoView({behavior:'smooth'});
+  });
 
   navTest.addEventListener('click', function() {
-    navTest.classList.add('site-nav__tab--active');
-    navChat.classList.remove('site-nav__tab--active');
-    var intro = document.getElementById('intro');
-    if (intro.classList.contains('intro--done')) {
+    setActive(navTest);
+    if (state.testDone) {
       document.getElementById('results').scrollIntoView({behavior:'smooth'});
     } else {
-      intro.scrollIntoView({behavior:'smooth'});
+      startTest();
     }
   });
 
   navChat.addEventListener('click', function() {
-    navChat.classList.add('site-nav__tab--active');
-    navTest.classList.remove('site-nav__tab--active');
+    setActive(navChat);
     document.getElementById('chatSection').scrollIntoView({behavior:'smooth'});
+  });
+
+  navComp.addEventListener('click', function() {
+    setActive(navComp);
+    document.getElementById('comprehensiveSection').scrollIntoView({behavior:'smooth'});
   });
 
   var dropZone = document.getElementById('chatDropZone');
@@ -1136,6 +1415,10 @@ window.analyzeChat = analyzeChat;
       var scores = {};
       ranked.forEach(function(r) { scores[r.name] = r.score; });
       window.analyzeChat(e.target.result, scores, ranked, resultDiv);
+      state.chatDone = true;
+      state.chatData = {dimensions: [], top3: [], summary: '上传文件分析结果'};
+      document.getElementById('badgeWechat').classList.add('landing-card__badge--on');
+      checkComprehensive();
     };
     reader.readAsText(file);
   }
@@ -1197,6 +1480,10 @@ function connectWechatDB() {
       statusEl.style.color = 'var(--w)';
       btn.disabled = false;
       renderWechatAnalysis(data, resultDiv);
+      state.chatDone = true;
+      state.chatData = data;
+      document.getElementById('badgeWechat').classList.add('landing-card__badge--on');
+      checkComprehensive();
     })
     .catch(function(err) {
       var msg = err.message || '';
