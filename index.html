@@ -1347,6 +1347,20 @@ function renderComprehensive() {
 }
 
 function startTest() {
+  // 清除 localStorage 缓存，确保重新开始测试
+  try { localStorage.removeItem('gallup_results'); } catch(e) {}
+
+  // 重置状态，避免残留的已展示结果影响新测试
+  var resultsEl = document.getElementById('results');
+  if (resultsEl) { resultsEl.classList.remove('results--on'); }
+  state.testDone = false;
+  state.testData = null;
+  document.getElementById('badgeTest').classList.remove('landing-card__badge--on');
+  ['radarSection','domainSection','rankingSection','aiSection','shareSection'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+
   document.getElementById('landing').classList.add('landing--done');
   setTimeout(function() {
     document.getElementById('landing').style.display = 'none';
@@ -1354,7 +1368,7 @@ function startTest() {
     setTimeout(function() {
       document.getElementById('header').classList.add('header--on');
       document.getElementById('main').classList.add('main--on');
-      showQ(0);
+      GallupApp.showQ(0);
       setTimeout(function() { document.getElementById('redScreen').style.transform = 'translateY(-100%)'; }, 100);
     }, 700);
   }, 400);
