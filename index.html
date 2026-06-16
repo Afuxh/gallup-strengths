@@ -1141,32 +1141,72 @@ window.analyzeChat = analyzeChat;
   }
 })();
 
+(function initBridgeCheck() {
+  var statusEl = document.getElementById('apiStatus');
+  fetch('http://localhost:8765/ping')
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.status === 'ok') {
+        statusEl.style.display = 'inline';
+        statusEl.textContent = '服务已连接';
+        statusEl.style.color = '#4CAF50';
+        setTimeout(function() { if (statusEl.textContent === '服务已连接') statusEl.style.display = 'none'; }, 4000);
+      }
+    })
+    .catch(function() {
+      statusEl.style.display = 'inline';
+      statusEl.textContent = '请先启动本地桥接服务';
+      statusEl.style.color = 'var(--r)';
+    });
+})();
+
 function connectWechatDB() {
   var statusEl = document.getElementById('apiStatus');
   var btn = document.getElementById('btnConnectWechat');
   var resultDiv = document.getElementById('chatResult');
 
   statusEl.style.display = 'inline';
-  statusEl.textContent = '正在连接...';
+  statusEl.textContent = '正在检查数据库...';
   statusEl.style.color = 'var(--g)';
   btn.disabled = true;
 
   var dbPath = 'D:\\新建文件夹\\xwechat_files\\wxid_qkslns979kft22_e651\\db_storage';
-  var url = 'http://localhost:8765/analyze?db_path=' + encodeURIComponent(dbPath);
 
-  fetch(url)
+  fetch('http://localhost:8765/wechat/status?db_path=' + encodeURIComponent(dbPath))
     .then(function(response) {
-      if (!response.ok) throw new Error('API not available');
+      if (!response.ok) throw new Error('API_DOWN');
       return response.json();
     })
+    .then(function(statusData) {
+      if (statusData.status === 'found') {
+        statusEl.textContent = '数据库已找到，正在分析...';
+        return fetch('http://localhost:8765/analyze?db_path=' + encodeURIComponent(dbPath))
+          .then(function(r) {
+            if (!r.ok) throw new Error('ANALYZE_FAIL');
+            return r.json();
+          });
+      } else if (statusData.status === 'not_found') {
+        throw new Error('DB_NOT_FOUND');
+      } else {
+        throw new Error('STATUS_' + (statusData.status || 'unknown'));
+      }
+    })
     .then(function(data) {
+      if (data.error && !data.dimensions) throw new Error(data.error);
       statusEl.textContent = '分析完成';
       statusEl.style.color = 'var(--w)';
       btn.disabled = false;
       renderWechatAnalysis(data, resultDiv);
     })
     .catch(function(err) {
-      statusEl.textContent = '请先启动本地桥接服务';
+      var msg = err.message || '';
+      if (msg === 'API_DOWN' || msg.indexOf('Failed to fetch') === 0 || msg === 'ANALYZE_FAIL') {
+        statusEl.textContent = '请先启动本地桥接服务';
+      } else if (msg === 'DB_NOT_FOUND') {
+        statusEl.textContent = '未找到微信数据库，请检查路径';
+      } else {
+        statusEl.textContent = '分析失败：' + msg.substring(0, 30);
+      }
       statusEl.style.color = 'var(--r)';
       btn.disabled = false;
     });
