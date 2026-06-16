@@ -784,9 +784,6 @@ var answers = new Array(180).fill(null);
 var currentQ = 0;
 var showingAll = false;
 
-var intro = document.getElementById('intro');
-var introCount = document.getElementById('introCount');
-var introBar = document.getElementById('introBar');
 var redScreen = document.getElementById('redScreen');
 var header = document.getElementById('header');
 var main = document.getElementById('main');
@@ -1000,6 +997,8 @@ document.getElementById('btnAll').addEventListener('click', function() {
   }
 });
 
+window.showQ = showQ;
+
 })();
 </script>
 
@@ -1156,28 +1155,6 @@ function buildShareCard(top5) {
       setTimeout(function() { btn.textContent = orig; btn.style.borderColor = ''; btn.style.color = ''; }, 1500);
     });
   });
-}
-
-function initChatAnalysis(ranked) {
-  var scores = {}; ranked.forEach(function(r) { scores[r.name] = r.score; });
-  var dropZone = document.getElementById('chatDropZone');
-  var fileInput = document.getElementById('chatFileInput');
-  var resultDiv = document.getElementById('chatResult');
-
-  dropZone.addEventListener('dragover', function(e) { e.preventDefault(); dropZone.classList.add('drag-over'); });
-  dropZone.addEventListener('dragleave', function() { dropZone.classList.remove('drag-over'); });
-  dropZone.addEventListener('drop', function(e) { e.preventDefault(); dropZone.classList.remove('drag-over'); handleFile(e.dataTransfer.files[0]); });
-  fileInput.addEventListener('change', function(e) { handleFile(e.target.files[0]); });
-
-  function handleFile(file) {
-    if (!file) return;
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      var content = e.target.result;
-      analyzeChat(content, scores, ranked, resultDiv);
-    };
-    reader.readAsText(file);
-  }
 }
 
 function analyzeChat(text, scores, ranked, resultDiv) {
